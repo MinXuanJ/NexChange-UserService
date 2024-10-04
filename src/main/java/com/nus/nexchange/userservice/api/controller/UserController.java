@@ -1,7 +1,7 @@
-package com.nus.nexchange.userservice.application.controllers;
+package com.nus.nexchange.userservice.api.controller;
 
-import com.nus.nexchange.userservice.domain.domainmodels.aggregates.UserIdentity;
-import com.nus.nexchange.userservice.domain.services.UserDomainService;
+import com.nus.nexchange.userservice.application.service.UserService;
+import com.nus.nexchange.userservice.domain.aggregate.UserIdentity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,27 +13,24 @@ import java.util.UUID;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserDomainService userDomainService;
-
     @Autowired
-    public UserController(UserDomainService userDomainService) {
-        this.userDomainService = userDomainService;
-    }
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<List<UserIdentity>> getAllUsers() {
-        List<UserIdentity> users = userDomainService.getAllUsers();
+        List<UserIdentity> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
+
     @PostMapping
     public ResponseEntity<UserIdentity> createUser(@RequestBody UserIdentity user) {
-        UserIdentity createdUser = userDomainService.createUser(user);
+        UserIdentity createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserIdentity> getUser(@PathVariable UUID id) {
-        UserIdentity user = userDomainService.getUserById(id);
+        UserIdentity user = userService.getUserById(id);
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
