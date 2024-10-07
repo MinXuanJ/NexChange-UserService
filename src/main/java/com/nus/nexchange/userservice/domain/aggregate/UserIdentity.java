@@ -42,7 +42,6 @@ public class UserIdentity {
         this.userPassword = userPassword;
     }
 
-    // 业务逻辑：更新用户邮箱
     public boolean updateUserEmail(String newEmail) {
         if (newEmail != null && newEmail.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             this.userEmail = newEmail;
@@ -52,7 +51,6 @@ public class UserIdentity {
         return false;
     }
 
-    // 业务逻辑：重置用户密码
     public boolean resetPassword(String newPassword) {
         if (newPassword != null && newPassword.length() >= 8) {
             this.userPassword = newPassword;
