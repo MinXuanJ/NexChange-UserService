@@ -1,7 +1,7 @@
 package com.nus.nexchange.userservice.api.controller;
 
 import com.nus.nexchange.userservice.api.dto.UserDTO;
-import com.nus.nexchange.userservice.application.Command.UserCommand;
+import com.nus.nexchange.userservice.application.command.UserCommand;
 import com.nus.nexchange.userservice.application.query.UserQuery;
 import com.nus.nexchange.userservice.domain.aggregate.UserIdentity;
 import org.modelmapper.ModelMapper;
@@ -38,9 +38,10 @@ public class UserController {
         return ResponseEntity.ok(userDTOs);
     }
 
-    @PostMapping
+    @PostMapping("/userCreate")
     public ResponseEntity<Void> createUser(@RequestBody UserDTO userDTO) {
         UserIdentity user = modelMapper.map(userDTO, UserIdentity.class);
+//        user.setUserId(UUID.randomUUID());
         userCommand.createUser(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -54,18 +55,6 @@ public class UserController {
             return ResponseEntity.ok(userDTO);
         } else {
             return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Boolean> login(@RequestBody UserDTO userDTO) {
-        UserIdentity user = modelMapper.map(userDTO, UserIdentity.class);
-        boolean res = userQuery.validateUser(user);
-        if (res) {
-//            String token = jwtService.
-            return ResponseEntity.ok(true);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         }
     }
 }
