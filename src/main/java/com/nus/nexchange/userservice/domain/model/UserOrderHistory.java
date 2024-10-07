@@ -26,8 +26,6 @@ public class UserOrderHistory {
 
     private OrderStatus refOrderStatus;
 
-    private String refOrderURL;
-
     @ManyToOne
     @JoinColumn(name = "user_profile_id", nullable = false)
     private UserProfile userProfile;
@@ -38,7 +36,6 @@ public class UserOrderHistory {
         this.refOrderShoutCutURL = refOrderShoutCutURL;
         this.refOrderAmount = refOrderAmount;
         this.refOrderStatus = refOrderStatus;
-        this.refOrderURL = refOrderURL;
     }
 
     //    public UserOrderHistory displayOrderHistoryDetail(){

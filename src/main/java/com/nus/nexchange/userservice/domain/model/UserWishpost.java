@@ -1,6 +1,6 @@
 package com.nus.nexchange.userservice.domain.model;
 
-import com.nus.nexchange.userservice.domain.aggregate.UserWishPostListing;
+import com.nus.nexchange.userservice.domain.aggregate.UserWishPostList;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,5 +24,5 @@ public class UserWishpost {
 
     @ManyToOne
     @JoinColumn(name = "wishpost_list_id",nullable = false)
-    private UserWishPostListing userWishPostList;
+    private UserWishPostList userWishPostList;
 }

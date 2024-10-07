@@ -1,6 +1,6 @@
 package com.nus.nexchange.userservice.domain.model;
 
-import com.nus.nexchange.userservice.domain.aggregate.UserContactListing;
+import com.nus.nexchange.userservice.domain.aggregate.UserContactList;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class UserContact {
 
     @ManyToOne
     @JoinColumn(name = "contact_listing_id", nullable = false)
-    private UserContactListing userContactList;
+    private UserContactList userContactList;
 
     public UserContact(String contactName, String contactAddress, String postalCode, String contactNumber) {
         this.contactName = contactName;

@@ -11,7 +11,7 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
-public class UserWishPostListing {
+public class UserWishPostList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

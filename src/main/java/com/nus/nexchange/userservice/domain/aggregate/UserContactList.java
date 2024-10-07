@@ -5,14 +5,13 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Data
 @Entity
 @NoArgsConstructor
-public class UserContactListing {
+public class UserContactList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

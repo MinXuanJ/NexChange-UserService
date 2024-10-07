@@ -24,8 +24,6 @@ public class UserPostHistory {
 
     private PostStatus refPostStatus;
 
-    private String refPostURL;
-
     @ManyToOne
     @JoinColumn(name = "user_profile_id", nullable = false)
     private UserProfile userProfile;
@@ -35,7 +33,6 @@ public class UserPostHistory {
         this.refPostTitle = refPostTitle;
         this.refPostShortCutURL = refPostShortCutURL;
         this.refPostStatus = refPostStatus;
-        this.refPostURL = refPostURL;
     }
 
 //    public UserPostHistory displayPostHistoryDetail(){
