@@ -1,5 +1,6 @@
 package com.nus.nexchange.userservice.domain.entity;
 
+import com.nus.nexchange.userservice.domain.aggregate.UserOrderHistoryList;
 import com.nus.nexchange.userservice.domain.aggregate.UserProfile;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,8 +28,8 @@ public class UserOrderHistory {
     private OrderStatus refOrderStatus;
 
     @ManyToOne
-    @JoinColumn(name = "user_profile_id", nullable = false)
-    private UserProfile userProfile;
+    @JoinColumn(name = "order_history_list_id", nullable = false)
+    private UserOrderHistoryList userOrderHistoryList;
 
     public UserOrderHistory(UUID refOrderId, String refOrderTitle, String refOrderShoutCutURL, String refOrderAmount, OrderStatus refOrderStatus, String refOrderURL) {
         this.refOrderId = refOrderId;
@@ -37,8 +38,4 @@ public class UserOrderHistory {
         this.refOrderAmount = refOrderAmount;
         this.refOrderStatus = refOrderStatus;
     }
-
-    //    public UserOrderHistory displayOrderHistoryDetail(){
-//
-//    }
 }

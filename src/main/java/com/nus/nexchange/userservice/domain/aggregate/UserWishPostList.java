@@ -31,8 +31,4 @@ public class UserWishPostList {
         wishPosts.remove(userWishpost);
         userWishpost.setUserWishPostList(null);
     }
-
-//    public void displayAllUserWishPosts() {
-//
-//    }
 }

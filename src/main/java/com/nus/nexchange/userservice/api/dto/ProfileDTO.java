@@ -1,21 +1,14 @@
-package com.nus.nexchange.userservice.domain.aggregate;
+package com.nus.nexchange.userservice.api.dto;
 
 import com.nus.nexchange.userservice.domain.entity.UserOrderHistory;
 import com.nus.nexchange.userservice.domain.entity.UserPostHistory;
-import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
 
 @Data
-@Entity
-@NoArgsConstructor
-public class UserProfile {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class ProfileDTO {
     private UUID userProfileId;
 
     private UUID userId;

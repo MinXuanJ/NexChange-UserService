@@ -12,11 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user-system/users")
 public class UserController {
 
     @Autowired
@@ -39,10 +38,9 @@ public class UserController {
         return ResponseEntity.ok(userDTOs);
     }
 
-    @PostMapping("/userCreate")
+    @PostMapping("/new-user")
     public ResponseEntity<Void> createUser(@RequestBody UserDTO userDTO) {
         UserIdentity user = modelMapper.map(userDTO, UserIdentity.class);
-//        user.setUserId(UUID.randomUUID());
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setUserPassword(passwordEncoder.encode(userDTO.getUserPassword()));
         userCommand.createUser(user);
@@ -50,12 +48,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable UUID id) {
-        UserIdentity user = userQuery.getUserById(id);
+    @PostMapping("/user")
+    public ResponseEntity<UserDTO> getUser(@RequestBody UserDTO userDTO) {
+        UserIdentity user = userQuery.getUserById(userDTO.getUserId());
         if (user != null) {
-            UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-            return ResponseEntity.ok(userDTO);
+            UserDTO userDTOBack = modelMapper.map(user, UserDTO.class);
+            return ResponseEntity.ok(userDTOBack);
         } else {
             return ResponseEntity.notFound().build();
         }
