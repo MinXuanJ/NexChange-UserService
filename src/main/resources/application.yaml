@@ -1,6 +1,6 @@
 spring:
   config:
-    import: "secret.properties"
+    import: "file:./src/main/resources/secret.properties"
   datasource:
     url: jdbc:mysql://localhost:3306/NexChangeUserDB
     username: root
@@ -12,3 +12,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  data:
+    redis:
+      host: localhost
+      port: 6379

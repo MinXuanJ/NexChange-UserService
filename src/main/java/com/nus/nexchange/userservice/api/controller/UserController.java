@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +43,8 @@ public class UserController {
     public ResponseEntity<Void> createUser(@RequestBody UserDTO userDTO) {
         UserIdentity user = modelMapper.map(userDTO, UserIdentity.class);
 //        user.setUserId(UUID.randomUUID());
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setUserPassword(passwordEncoder.encode(userDTO.getUserPassword()));
         userCommand.createUser(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

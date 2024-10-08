@@ -1,6 +1,6 @@
 package com.nus.nexchange.userservice.domain.aggregate;
 
-import com.nus.nexchange.userservice.domain.model.UserWishpost;
+import com.nus.nexchange.userservice.domain.entity.UserWishpost;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package com.nus.nexchange.userservice.domain.aggregate;
 
-import com.nus.nexchange.userservice.domain.model.UserOrderHistory;
-import com.nus.nexchange.userservice.domain.model.UserPostHistory;
+import com.nus.nexchange.userservice.domain.entity.UserOrderHistory;
+import com.nus.nexchange.userservice.domain.entity.UserPostHistory;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,10 +20,12 @@ public class UserProfile {
 
     private UUID userId;
 
-    @OneToMany(mappedBy="userProfile")
+    private String imageUrl;
+
+    @OneToMany(mappedBy = "userProfile")
     private List<UserPostHistory> userPostHistoryList;
 
-    @OneToMany(mappedBy="userProfile")
+    @OneToMany(mappedBy = "userProfile")
     private List<UserOrderHistory> userOrderHistoryList;
 
 //    public void displayPostHistory() {}
