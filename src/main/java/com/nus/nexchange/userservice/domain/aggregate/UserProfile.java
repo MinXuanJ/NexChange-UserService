@@ -1,7 +1,7 @@
 package com.nus.nexchange.userservice.domain.aggregate;
 
-import com.nus.nexchange.userservice.domain.model.UserOrderHistory;
-import com.nus.nexchange.userservice.domain.model.UserPostHistory;
+import com.nus.nexchange.userservice.domain.entity.UserOrderHistory;
+import com.nus.nexchange.userservice.domain.entity.UserPostHistory;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

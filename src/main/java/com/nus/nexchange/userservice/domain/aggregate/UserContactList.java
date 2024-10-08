@@ -1,6 +1,6 @@
 package com.nus.nexchange.userservice.domain.aggregate;
 
-import com.nus.nexchange.userservice.domain.model.UserContact;
+import com.nus.nexchange.userservice.domain.entity.UserContact;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.nus.nexchange.userservice.domain.model;
+package com.nus.nexchange.userservice.domain.entity;
 
 import com.nus.nexchange.userservice.domain.aggregate.UserProfile;
 import jakarta.persistence.*;
