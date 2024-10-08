@@ -8,5 +8,4 @@ import java.util.UUID;
 public interface IUserQuery {
     public List<UserIdentity> getAllUsers();
     public UserIdentity getUserById(UUID id);
-    public boolean validateUser(UserIdentity userIdentity);
 }

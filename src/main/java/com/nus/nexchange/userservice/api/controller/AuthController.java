@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user-system/auth")
 public class AuthController {
 
     @Autowired
@@ -30,8 +30,8 @@ public class AuthController {
     @Autowired
     private RedisService redisService;
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) throws Exception {
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserDTO userDTO) throws Exception {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userDTO.getUserEmail(), userDTO.getUserPassword())

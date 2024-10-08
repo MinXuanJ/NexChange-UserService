@@ -1,6 +1,5 @@
 package com.nus.nexchange.userservice.domain.aggregate;
 
-import com.nus.nexchange.userservice.domain.entity.UserOrderHistory;
 import com.nus.nexchange.userservice.domain.entity.UserPostHistory;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -12,15 +11,13 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
-public class UserProfile {
-
+public class UserPostHistoryList {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID userProfileId;
+    private UUID postHistoryListingId;
 
     private UUID userId;
 
-    private String userAvatarURL;
-
-    private String userNickName;
+    @OneToMany(mappedBy="userPostHistoryList")
+    private List<UserPostHistory> userPostHistories;
 }
