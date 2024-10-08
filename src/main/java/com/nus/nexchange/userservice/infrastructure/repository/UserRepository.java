@@ -1,4 +1,4 @@
-package com.nus.nexchange.userservice.infrastructure.persistence;
+package com.nus.nexchange.userservice.infrastructure.repository;
 
 import com.nus.nexchange.userservice.domain.aggregate.UserIdentity;
 import org.springframework.data.jpa.repository.JpaRepository;

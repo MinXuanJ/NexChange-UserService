@@ -41,11 +41,9 @@ public class AuthController {
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userDTO.getUserEmail());
-        System.out.println("Generated 1");
         String token = jwtUtil.generateToken(userDetails.getUsername());
         long expiresIn = jwtUtil.getExpirationTime();
-        System.out.println("Generated token: " + token);
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(new AuthenticationResponse(token, expiresIn));
     }
 
     @PostMapping("/logout")
