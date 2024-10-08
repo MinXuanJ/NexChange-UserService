@@ -20,7 +20,9 @@ public class UserProfile {
 
     private UUID userId;
 
-    private String imageUrl;
+    private String userNickname;
+
+    private String userAvatarUrl;
 
     @OneToMany(mappedBy = "userProfile")
     private List<UserPostHistory> userPostHistoryList;
