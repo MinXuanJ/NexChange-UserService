@@ -23,4 +23,8 @@ public class UserProfile {
     private String userAvatarURL;
 
     private String userNickName;
+
+    public UserProfile(UUID userId){
+        this.userId = userId;
+    }
 }

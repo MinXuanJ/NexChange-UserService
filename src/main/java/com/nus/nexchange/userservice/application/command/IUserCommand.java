@@ -1,7 +1,7 @@
 package com.nus.nexchange.userservice.application.command;
 
-import com.nus.nexchange.userservice.domain.aggregate.UserIdentity;
+import com.nus.nexchange.userservice.api.dto.UserDTO;
 
 public interface IUserCommand {
-    public void createUser(UserIdentity userIdentity);
+    public void createUser(UserDTO userDTO);
 }

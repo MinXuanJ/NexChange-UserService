@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,11 @@ public class UserContactList {
 
     @OneToMany(mappedBy = "userContactList")
     private List<UserContact> userContacts;
+
+    public UserContactList(UUID userId) {
+        this.userId = userId;
+        userContacts = new ArrayList<UserContact>();
+    }
 
     public void createContactInfo(UserContact userContact) {
         userContacts.add(userContact);
@@ -43,12 +49,12 @@ public class UserContactList {
         existingContact.setContactNumber(userContact.getContactNumber());
     }
 
-    public void deleteContactInfo(UserContact userContact) {
-        userContacts.remove(userContact);
-        userContact.setUserContactList(null);
+    public void deleteContactInfo(UUID contactId) {
+        UserContact userContactToRemove = userContacts.stream()
+                .filter(contact -> contact.getContactId().equals(contactId))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Contact not found"));
+
+        userContacts.remove(userContactToRemove);
+        userContactToRemove.setUserContactList(null);
     }
-//
-//    public void displayAllContactInfo(){
-//
-//    }
 }

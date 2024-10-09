@@ -24,38 +24,33 @@ public class UserController {
     @Autowired
     private UserCommand userCommand;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<UserIdentity> users = userQuery.getAllUsers();
+        List<UserDTO> users = userQuery.getAllUsers();
 
-        List<UserDTO> userDTOs = users.stream()
-                .map(user -> modelMapper.map(user, UserDTO.class))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(userDTOs);
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping("/new-user")
     public ResponseEntity<Void> createUser(@RequestBody UserDTO userDTO) {
-        UserIdentity user = modelMapper.map(userDTO, UserIdentity.class);
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        user.setUserPassword(passwordEncoder.encode(userDTO.getUserPassword()));
-        userCommand.createUser(user);
+        userCommand.createUser(userDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/user")
     public ResponseEntity<UserDTO> getUser(@RequestBody UserDTO userDTO) {
-        UserIdentity user = userQuery.getUserById(userDTO.getUserId());
-        if (user != null) {
-            UserDTO userDTOBack = modelMapper.map(user, UserDTO.class);
-            return ResponseEntity.ok(userDTOBack);
-        } else {
+        try {
+            UserDTO user = userQuery.getUserById(userDTO.getUserId());
+            return ResponseEntity.ok(user);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/reset")
+    public ResponseEntity<Void> resetUser(@RequestBody UserDTO userDTO) {
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/user-system/profiles")
+@RequestMapping("/api/user-system/profile")
 public class ProfileController {
     @Autowired
     private ProfileQuery profileQuery;
@@ -21,34 +21,33 @@ public class ProfileController {
     @Autowired
     private ProfileCommand profileCommand;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @PostMapping("/profile")
+    @PostMapping
     public ResponseEntity<ProfileDTO> viewProfile(@RequestBody ProfileDTO profileDTO) {
-        UserProfile userProfile = profileQuery.getUserProfileByUserId(profileDTO.getUserId());
+        ProfileDTO userProfile = profileQuery.getUserProfileByUserId(profileDTO.getUserId());
 
-        ProfileDTO profile = modelMapper.map(userProfile, ProfileDTO.class);
-        return ResponseEntity.ok(profile);
+        return ResponseEntity.ok(userProfile);
     }
 
-    @PostMapping("/newProfile")
-    public ResponseEntity<String> createProfile(@RequestBody ProfileDTO profileDTO) {
-        UserProfile userProfile = modelMapper.map(profileDTO, UserProfile.class);
-        profileCommand.createProfile(userProfile);
-        return ResponseEntity.ok("Profile created");
-    }
+//    @PostMapping("/newProfile")
+//    public ResponseEntity<String> createProfile(@RequestBody ProfileDTO profileDTO) {
+//        UserProfile userProfile = modelMapper.map(profileDTO, UserProfile.class);
+//        profileCommand.createProfile(userProfile);
+//        return ResponseEntity.ok("Profile created");
+//    }
 
     @PutMapping("/update")
     public ResponseEntity<String> updateProfile(@RequestBody ProfileDTO profileDTO) {
-        UserProfile userProfile = profileQuery.getUserProfileByUserId(profileDTO.getUserId());
-        profileCommand.updateProfile(userProfile);
-        return ResponseEntity.ok("Profile updated");
+        try {
+            profileCommand.updateProfile(profileDTO);
+            return ResponseEntity.ok("Profile updated");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteProfile(@RequestParam UUID userId) {
-        profileCommand.deleteProfile(userId);
-        return ResponseEntity.ok("Profile deleted");
-    }
+//    @DeleteMapping("/delete")
+//    public ResponseEntity<String> deleteProfile(@RequestParam UUID userId) {
+//        profileCommand.deleteProfile(userId);
+//        return ResponseEntity.ok("Profile deleted");
+//    }
 }

@@ -1,9 +1,9 @@
 package com.nus.nexchange.userservice.application.query;
 
-import com.nus.nexchange.userservice.domain.aggregate.UserProfile;
+import com.nus.nexchange.userservice.api.dto.ProfileDTO;
 
 import java.util.UUID;
 
 public interface IProfileQuery {
-    public UserProfile getUserProfileByUserId(UUID userId);
+    public ProfileDTO getUserProfileByUserId(UUID userId);
 }
