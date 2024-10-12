@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS = 'docker_hub_credentails'
+        DOCKER_CREDENTIALS = 'docker_hub_credentials'
         DOCKER_IMAGE = "jmx7139/nexchange-userservice"
     }
 
