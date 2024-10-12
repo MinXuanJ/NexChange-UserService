@@ -39,7 +39,16 @@ pipeline {
                         sh "docker login -u $USERNAME -p $PASSWORD"
                         sh "docker tag $DOCKER_IMAGE $DOCKER_IMAGE:latest"
                         sh "docker push $DOCKER_IMAGE:latest"
+                        sh "docker images" 
                     }
+                }
+            }
+        }
+        stage('Verify Push') {
+            steps {
+                script {
+                    sh "docker pull $DOCKER_IMAGE:latest"
+                    sh "docker images"
                 }
             }
         }
