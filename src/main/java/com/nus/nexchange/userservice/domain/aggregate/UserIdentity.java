@@ -16,7 +16,7 @@ public class UserIdentity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id", nullable = false, unique = true, length = 36)
+    @Column(name = "user_id", nullable = false, unique = true, length = 16)
     private UUID userId;
 
     @Column(name = "user_name", nullable = false)

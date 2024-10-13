@@ -6,8 +6,9 @@ import java.util.UUID;
 
 @Data
 public class ContactDTO {
-    private UUID userId;
-    
+    //    private UUID userId;
+    private UUID contactListId;
+
     private UUID contactId;
 
     private String contactName;

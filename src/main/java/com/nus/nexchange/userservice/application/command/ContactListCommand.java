@@ -1,6 +1,7 @@
 package com.nus.nexchange.userservice.application.command;
 
 import com.nus.nexchange.userservice.api.dto.ContactDTO;
+import com.nus.nexchange.userservice.api.dto.ContactListDTO;
 import com.nus.nexchange.userservice.domain.aggregate.UserContactList;
 import com.nus.nexchange.userservice.domain.entity.UserContact;
 import com.nus.nexchange.userservice.infrastructure.repository.ContactListRepository;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class ContactListCommand implements IContactListCommand{
+public class ContactListCommand implements IContactListCommand {
 
     @Autowired
     private ContactListRepository contactListRepository;
@@ -20,40 +21,31 @@ public class ContactListCommand implements IContactListCommand{
     private ModelMapper modelMapper;
 
     @Override
-    public void addContact(ContactDTO contactDTO) {
-        UserContactList contactList = contactListRepository.findByUserId(contactDTO.getUserId());
-        if(contactList == null) {
-            throw new IllegalArgumentException("UserContactList not found for userId: "+contactDTO.getUserId());
-        }
-
+    public void addContact(ContactListDTO contactListDTO, ContactDTO contactDTO) {
         UserContact userContact = modelMapper.map(contactDTO, UserContact.class);
+        UserContactList userContactList = modelMapper.map(contactListDTO, UserContactList.class);
 
-        contactList.createContactInfo(userContact);
+        userContactList.createContactInfo(userContact);
 
-        contactListRepository.save(contactList);
+        contactListRepository.save(userContactList);
     }
 
     @Override
-    public void updateContact(ContactDTO contactDTO) {
-        UserContactList contactList = contactListRepository.findByUserId(contactDTO.getUserId());
-        if(contactList == null) {
-            throw new IllegalArgumentException("UserContactList not found for userId: "+contactDTO.getUserId());
-        }
-
+    public void updateContact(ContactListDTO contactListDTO, ContactDTO contactDTO) {
         UserContact userContact = modelMapper.map(contactDTO, UserContact.class);
+        UserContactList userContactList = modelMapper.map(contactListDTO, UserContactList.class);
 
-        contactList.updateContactInfo(userContact);
+        userContactList.updateContactInfo(userContact);
 
-        contactListRepository.save(contactList);
+        contactListRepository.save(userContactList);
     }
 
     @Override
-    public void removeContact(ContactDTO contactDTO) {
-        UserContactList contactList = contactListRepository.findByUserId(contactDTO.getUserId());
-        if(contactList == null) {
-            throw new IllegalArgumentException("UserContactList not found for userId: "+contactDTO.getUserId());
-        }
+    public void removeContact(UUID contactId, ContactListDTO contactListDTO) {
+        UserContactList userContactList = modelMapper.map(contactListDTO, UserContactList.class);
 
-        contactList.deleteContactInfo(contactDTO.getUserId());
+        userContactList.deleteContactInfo(contactId);
+
+        contactListRepository.save(userContactList);
     }
 }

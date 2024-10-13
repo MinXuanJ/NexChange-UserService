@@ -16,7 +16,7 @@ public class UserContactList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID contactListingId;
+    private UUID contactListId;
 
     private UUID userId;
 
