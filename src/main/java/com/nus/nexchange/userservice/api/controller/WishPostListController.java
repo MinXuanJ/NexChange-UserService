@@ -1,8 +1,7 @@
 package com.nus.nexchange.userservice.api.controller;
 
-import com.nus.nexchange.userservice.api.dto.ContactListDTO;
-import com.nus.nexchange.userservice.api.dto.WishPostDTO;
-import com.nus.nexchange.userservice.api.dto.WishPostListDTO;
+import com.nus.nexchange.userservice.api.dto.Wishposts.WishPostDTO;
+import com.nus.nexchange.userservice.api.dto.Wishposts.WishPostListDTO;
 import com.nus.nexchange.userservice.application.command.WishPostListCommand;
 import com.nus.nexchange.userservice.application.query.WishPostListQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +39,15 @@ public class WishPostListController {
         }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<String> updateWishPost(@RequestBody WishPostDTO wishPostDTO) {
-        try {
-            wishPostListCommand.updateWishPost(wishPostDTO);
-            return ResponseEntity.ok("Updated wishpost");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    @PutMapping("/update")
+//    public ResponseEntity<String> updateWishPost(@RequestBody WishPostDTO wishPostDTO) {
+//        try {
+//            wishPostListCommand.updateWishPost(wishPostDTO);
+//            return ResponseEntity.ok("Updated wishpost");
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 
     @DeleteMapping
     public ResponseEntity<String> deleteWishPost(@RequestParam UUID wishPostListId, @RequestParam UUID wishPostId) {

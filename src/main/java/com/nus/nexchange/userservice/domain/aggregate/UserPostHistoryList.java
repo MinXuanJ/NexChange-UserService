@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,10 +15,15 @@ import java.util.UUID;
 public class UserPostHistoryList {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID postHistoryListingId;
+    private UUID postHistoryListId;
 
     private UUID userId;
 
     @OneToMany(mappedBy="userPostHistoryList")
     private List<UserPostHistory> userPostHistories;
+
+    public UserPostHistoryList(UUID userId) {
+        this.userId = userId;
+        userPostHistories = new ArrayList<>();
+    }
 }

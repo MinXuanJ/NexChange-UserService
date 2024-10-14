@@ -1,7 +1,7 @@
 package com.nus.nexchange.userservice.application.query;
 
-import com.nus.nexchange.userservice.api.dto.ContactDTO;
-import com.nus.nexchange.userservice.api.dto.ContactListDTO;
+import com.nus.nexchange.userservice.api.dto.Contacts.ContactDTO;
+import com.nus.nexchange.userservice.api.dto.Contacts.ContactListDTO;
 import com.nus.nexchange.userservice.domain.aggregate.UserContactList;
 import com.nus.nexchange.userservice.infrastructure.repository.ContactListRepository;
 import org.modelmapper.ModelMapper;

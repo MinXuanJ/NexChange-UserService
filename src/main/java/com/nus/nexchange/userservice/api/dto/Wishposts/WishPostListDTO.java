@@ -1,6 +1,5 @@
-package com.nus.nexchange.userservice.api.dto;
+package com.nus.nexchange.userservice.api.dto.Wishposts;
 
-import com.nus.nexchange.userservice.domain.entity.UserWishPost;
 import lombok.Data;
 
 import java.util.List;

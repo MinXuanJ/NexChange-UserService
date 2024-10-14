@@ -25,7 +25,7 @@ public class UserContactList {
 
     public UserContactList(UUID userId) {
         this.userId = userId;
-        userContacts = new ArrayList<UserContact>();
+        userContacts = new ArrayList<>();
     }
 
     public void addContact(UserContact userContact) {

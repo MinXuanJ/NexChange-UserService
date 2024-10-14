@@ -1,4 +1,4 @@
-package com.nus.nexchange.userservice.api.dto;
+package com.nus.nexchange.userservice.api.dto.Contacts;
 
 import lombok.Data;
 

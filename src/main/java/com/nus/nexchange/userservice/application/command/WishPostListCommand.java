@@ -1,7 +1,6 @@
 package com.nus.nexchange.userservice.application.command;
 
-import com.nus.nexchange.userservice.api.dto.WishPostDTO;
-import com.nus.nexchange.userservice.api.dto.WishPostListDTO;
+import com.nus.nexchange.userservice.api.dto.Wishposts.WishPostDTO;
 import com.nus.nexchange.userservice.domain.aggregate.UserWishPostList;
 import com.nus.nexchange.userservice.domain.entity.UserWishPost;
 import com.nus.nexchange.userservice.infrastructure.repository.WishPostListRepository;
@@ -33,18 +32,18 @@ public class WishPostListCommand implements IWishPostListCommand {
         wishPostListRepository.save(wishPostList);
     }
 
-    @Override
-    public void updateWishPost(WishPostDTO wishPostDTO) {
-        UserWishPost wishPost = modelMapper.map(wishPostDTO, UserWishPost.class);
-        UserWishPostList wishPostList = wishPostListRepository.findById(wishPostDTO.getWishPostListId()).orElse(null);
-        if (wishPostList == null) {
-            throw new IllegalArgumentException("WishPostList not found");
-        }
-
-        wishPostList.updateUserWishPost(wishPost);
-
-        wishPostListRepository.save(wishPostList);
-    }
+//    @Override
+//    public void updateWishPost(WishPostDTO wishPostDTO) {
+//        UserWishPost wishPost = modelMapper.map(wishPostDTO, UserWishPost.class);
+//        UserWishPostList wishPostList = wishPostListRepository.findById(wishPostDTO.getWishPostListId()).orElse(null);
+//        if (wishPostList == null) {
+//            throw new IllegalArgumentException("WishPostList not found");
+//        }
+//
+//        wishPostList.updateUserWishPost(wishPost);
+//
+//        wishPostListRepository.save(wishPostList);
+//    }
 
     @Override
     public void removeWishPost(UUID wishPostId, UUID wishPostListId) {

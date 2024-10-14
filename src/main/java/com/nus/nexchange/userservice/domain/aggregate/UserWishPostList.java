@@ -1,11 +1,11 @@
 package com.nus.nexchange.userservice.domain.aggregate;
 
-import com.nus.nexchange.userservice.domain.entity.UserContact;
 import com.nus.nexchange.userservice.domain.entity.UserWishPost;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,12 +16,17 @@ public class UserWishPostList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID wishPostListingId;
+    private UUID wishPostListId;
 
     private UUID userId;
 
     @OneToMany(mappedBy = "userWishPostList")
     private List<UserWishPost> wishPosts;
+
+    public UserWishPostList(UUID userId) {
+        this.userId = userId;
+        wishPosts = new ArrayList<>();
+    }
 
     public void addUserWishPost(UserWishPost userWishpost) {
         wishPosts.add(userWishpost);

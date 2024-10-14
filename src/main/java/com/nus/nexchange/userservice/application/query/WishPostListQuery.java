@@ -1,7 +1,7 @@
 package com.nus.nexchange.userservice.application.query;
 
-import com.nus.nexchange.userservice.api.dto.WishPostDTO;
-import com.nus.nexchange.userservice.api.dto.WishPostListDTO;
+import com.nus.nexchange.userservice.api.dto.Wishposts.WishPostDTO;
+import com.nus.nexchange.userservice.api.dto.Wishposts.WishPostListDTO;
 import com.nus.nexchange.userservice.domain.aggregate.UserWishPostList;
 import com.nus.nexchange.userservice.infrastructure.repository.WishPostListRepository;
 import org.modelmapper.ModelMapper;

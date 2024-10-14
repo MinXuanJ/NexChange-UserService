@@ -1,4 +1,4 @@
-package com.nus.nexchange.userservice.api.dto;
+package com.nus.nexchange.userservice.api.dto.Wishposts;
 
 import com.nus.nexchange.userservice.domain.entity.PostStatus;
 import lombok.Data;

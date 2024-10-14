@@ -1,6 +1,6 @@
 package com.nus.nexchange.userservice.application.query;
 
-import com.nus.nexchange.userservice.api.dto.WishPostListDTO;
+import com.nus.nexchange.userservice.api.dto.Wishposts.WishPostListDTO;
 
 import java.util.UUID;
 

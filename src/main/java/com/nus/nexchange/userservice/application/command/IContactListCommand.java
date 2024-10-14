@@ -1,7 +1,6 @@
 package com.nus.nexchange.userservice.application.command;
 
-import com.nus.nexchange.userservice.api.dto.ContactDTO;
-import com.nus.nexchange.userservice.api.dto.ContactListDTO;
+import com.nus.nexchange.userservice.api.dto.Contacts.ContactDTO;
 
 import java.util.UUID;
 
