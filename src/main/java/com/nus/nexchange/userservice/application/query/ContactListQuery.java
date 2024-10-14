@@ -42,7 +42,11 @@ public class ContactListQuery implements IContactListQuery {
         ContactListDTO contactListDTO = modelMapper.map(userContactList, ContactListDTO.class);
 
         List<ContactDTO> contactDTOs = userContactList.getUserContacts().stream()
-                .map(userContact -> modelMapper.map(userContact, ContactDTO.class))
+                .map(userContact -> {
+                    ContactDTO contactDTO = modelMapper.map(userContact, ContactDTO.class);
+                    contactDTO.setContactListId(userContactList.getContactListId());
+                    return contactDTO;
+                })
                 .toList();
 
         contactListDTO.setUserContacts(contactDTOs);

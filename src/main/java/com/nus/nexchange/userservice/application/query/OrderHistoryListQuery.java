@@ -27,14 +27,18 @@ public class OrderHistoryListQuery implements IOrderHistoryListQuery {
     }
 
     private OrderHistoryListDTO getOrderHistoryListDTO(UserOrderHistoryList orderHistoryList) {
-        if(orderHistoryList == null) {
+        if (orderHistoryList == null) {
             throw new IllegalArgumentException("orderHistoryList is null");
         }
 
         OrderHistoryListDTO orderHistoryListDTO = modelMapper.map(orderHistoryList, OrderHistoryListDTO.class);
 
         List<OrderHistoryDTO> orderHistoryDTOS = orderHistoryList.getUserOrderHistories().stream()
-                .map(userOrderhistory -> modelMapper.map(userOrderhistory, OrderHistoryDTO.class))
+                .map(userOrderhistory -> {
+                    OrderHistoryDTO orderHistoryDTO = modelMapper.map(userOrderhistory, OrderHistoryDTO.class);
+                    orderHistoryDTO.setOrderHistoryListId(orderHistoryList.getOrderHistoryListId());
+                    return orderHistoryDTO;
+                })
                 .toList();
 
         orderHistoryListDTO.setUserOrderHistories(orderHistoryDTOS);

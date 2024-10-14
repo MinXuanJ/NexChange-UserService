@@ -41,8 +41,7 @@ public class ProfileController {
     @PutMapping("/update")
     public ResponseEntity<String> updateProfile(@RequestBody ProfileDTO profileDTO) {
         try {
-            ProfileDTO profileFromDB = profileQuery.getProfile(profileDTO.getUserProfileId());
-            profileCommand.updateProfile(profileFromDB, profileDTO);
+            profileCommand.updateProfile(profileDTO);
             return ResponseEntity.ok("Profile updated");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

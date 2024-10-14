@@ -40,7 +40,11 @@ public class WishPostListQuery implements IWishPostListQuery {
         WishPostListDTO wishPostListDTO = modelMapper.map(userWishPostList, WishPostListDTO.class);
 
         List<WishPostDTO> wishPostDTOs = userWishPostList.getWishPosts().stream()
-                .map(userWishPost -> modelMapper.map(userWishPost, WishPostDTO.class))
+                .map(userWishPost -> {
+                    WishPostDTO wishPostDTO = modelMapper.map(userWishPost, WishPostDTO.class);
+                    wishPostDTO.setWishPostListId(userWishPostList.getWishPostListId());
+                    return wishPostDTO;
+                })
                 .toList();
 
         wishPostListDTO.setWishPosts(wishPostDTOs);

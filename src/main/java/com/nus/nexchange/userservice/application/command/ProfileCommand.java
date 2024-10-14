@@ -22,12 +22,16 @@ public class ProfileCommand implements IProfileCommand {
 //    }
 
     @Override
-    public void updateProfile(ProfileDTO profileFromDB, ProfileDTO profileDTO) {
+    public void updateProfile(ProfileDTO profileDTO) {
+        UserProfile profileFromDB = profileRepository.findById(profileDTO.getUserProfileId()).orElse(null);
+
+        if(profileFromDB == null){
+            throw new IllegalArgumentException("Profile does not exist");
+        }
         profileFromDB.setUserAvatarURL(profileDTO.getUserAvatarURL());
         profileFromDB.setUserNickName(profileDTO.getUserNickName());
 
-        UserProfile profile = modelMapper.map(profileFromDB, UserProfile.class);
-        profileRepository.save(profile);
+        profileRepository.save(profileFromDB);
     }
 
 //    @Override

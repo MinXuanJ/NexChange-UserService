@@ -33,7 +33,11 @@ public class PostHistoryListQuery implements IPostHistoryListQuery {
         PostHistoryListDTO postHistoryListDTO = modelMapper.map(postHistoryList, PostHistoryListDTO.class);
 
         List<PostHistoryDTO> postHistoryDTOS = postHistoryList.getUserPostHistories().stream()
-                .map(postHistoryDTO -> modelMapper.map(postHistoryDTO, PostHistoryDTO.class))
+                .map(userPostHistory -> {
+                    PostHistoryDTO postHistoryDTO = modelMapper.map(userPostHistory, PostHistoryDTO.class);
+                    postHistoryDTO.setPostHistoryListId(postHistoryList.getPostHistoryListId());
+                    return postHistoryDTO;
+                })
                 .toList();
 
         postHistoryListDTO.setPostHistories(postHistoryDTOS);

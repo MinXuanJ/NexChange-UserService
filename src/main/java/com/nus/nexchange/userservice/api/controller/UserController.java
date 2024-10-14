@@ -3,6 +3,7 @@ package com.nus.nexchange.userservice.api.controller;
 import com.nus.nexchange.userservice.api.dto.UserDTO;
 import com.nus.nexchange.userservice.application.command.UserCommand;
 import com.nus.nexchange.userservice.application.query.UserQuery;
+import com.nus.nexchange.userservice.application.security.RedisService;
 import com.nus.nexchange.userservice.domain.aggregate.UserIdentity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class UserController {
 
     @Autowired
     private UserCommand userCommand;
+
+    @Autowired
+    private RedisService redisService;
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -50,8 +54,14 @@ public class UserController {
     }
 
     @PutMapping("/reset")
-    public ResponseEntity<Void> resetUser(@RequestBody UserDTO userDTO) {
-        return new ResponseEntity<>(null, HttpStatus.OK);
+    public ResponseEntity<String> resetUser(@RequestHeader("Authorization") String token, @RequestBody UserDTO userDTO) {
+        try {
+            userCommand.resetPassword(userDTO);
+            redisService.deleteToken(token.substring(7));
+            return ResponseEntity.ok("Password reset successful");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

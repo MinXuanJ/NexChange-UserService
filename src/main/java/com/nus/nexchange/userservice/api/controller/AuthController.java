@@ -47,10 +47,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorizationHeader) {
         // 从请求头中获取 JWT
-        final String authorizationHeader = request.getHeader("Authorization");
-
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String jwt = authorizationHeader.substring(7);
 

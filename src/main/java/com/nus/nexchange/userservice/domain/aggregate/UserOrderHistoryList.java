@@ -19,7 +19,7 @@ public class UserOrderHistoryList {
 
     private UUID userId;
 
-    @OneToMany(mappedBy = "userOrderHistoryList")
+    @OneToMany(mappedBy = "userOrderHistoryList",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<UserOrderHistory> userOrderHistories;
 
     public UserOrderHistoryList(UUID userId) {

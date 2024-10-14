@@ -33,4 +33,18 @@ public class UserCommand implements IUserCommand {
         UserIdentityCreatedEvent event = new UserIdentityCreatedEvent(user.getUserId());
         domainEventPublisher.publish(event);
     }
+
+    @Override
+    public void resetPassword(UserDTO userDTO) {
+        UserIdentity user = userRepository.findById(userDTO.getUserId()).orElse(null);
+
+        if(user == null){
+            throw new IllegalArgumentException("User not found");
+        }
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setUserPassword(passwordEncoder.encode(userDTO.getUserPassword()));
+
+        userRepository.save(user);
+    }
 }

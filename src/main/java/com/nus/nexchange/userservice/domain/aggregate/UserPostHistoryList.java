@@ -19,7 +19,7 @@ public class UserPostHistoryList {
 
     private UUID userId;
 
-    @OneToMany(mappedBy="userPostHistoryList")
+    @OneToMany(mappedBy="userPostHistoryList",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<UserPostHistory> userPostHistories;
 
     public UserPostHistoryList(UUID userId) {

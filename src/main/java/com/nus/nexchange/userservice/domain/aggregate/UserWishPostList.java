@@ -20,7 +20,7 @@ public class UserWishPostList {
 
     private UUID userId;
 
-    @OneToMany(mappedBy = "userWishPostList")
+    @OneToMany(mappedBy = "userWishPostList",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<UserWishPost> wishPosts;
 
     public UserWishPostList(UUID userId) {

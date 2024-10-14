@@ -20,7 +20,7 @@ public class UserContactList {
 
     private UUID userId;
 
-    @OneToMany(mappedBy = "userContactList")
+    @OneToMany(mappedBy = "userContactList",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<UserContact> userContacts;
 
     public UserContactList(UUID userId) {
@@ -47,6 +47,7 @@ public class UserContactList {
         existingContact.setContactAddress(userContact.getContactAddress());
         existingContact.setPostalCode(userContact.getPostalCode());
         existingContact.setContactNumber(userContact.getContactNumber());
+        existingContact.setDefaultContact(userContact.isDefaultContact());
     }
 
     public void deleteContact(UUID contactId) {
