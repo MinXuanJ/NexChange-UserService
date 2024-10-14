@@ -21,30 +21,42 @@ public class ContactListCommand implements IContactListCommand {
     private ModelMapper modelMapper;
 
     @Override
-    public void addContact(ContactListDTO contactListDTO, ContactDTO contactDTO) {
+    public void addContact(ContactDTO contactDTO) {
         UserContact userContact = modelMapper.map(contactDTO, UserContact.class);
-        UserContactList userContactList = modelMapper.map(contactListDTO, UserContactList.class);
+        UserContactList userContactList = contactListRepository.findById(contactDTO.getContactListId()).orElse(null);
 
-        userContactList.createContactInfo(userContact);
+        if (userContactList == null) {
+            throw new IllegalArgumentException("Contact list does not exist");
+        }
+
+        userContactList.addContact(userContact);
 
         contactListRepository.save(userContactList);
     }
 
     @Override
-    public void updateContact(ContactListDTO contactListDTO, ContactDTO contactDTO) {
+    public void updateContact(ContactDTO contactDTO) {
         UserContact userContact = modelMapper.map(contactDTO, UserContact.class);
-        UserContactList userContactList = modelMapper.map(contactListDTO, UserContactList.class);
+        UserContactList userContactList = contactListRepository.findById(contactDTO.getContactListId()).orElse(null);
 
-        userContactList.updateContactInfo(userContact);
+        if (userContactList == null) {
+            throw new IllegalArgumentException("Contact list does not exist");
+        }
+
+        userContactList.updateContact(userContact);
 
         contactListRepository.save(userContactList);
     }
 
     @Override
-    public void removeContact(UUID contactId, ContactListDTO contactListDTO) {
-        UserContactList userContactList = modelMapper.map(contactListDTO, UserContactList.class);
+    public void removeContact(UUID contactId, UUID contactListId) {
+        UserContactList userContactList = contactListRepository.findById(contactListId).orElse(null);
 
-        userContactList.deleteContactInfo(contactId);
+        if (userContactList == null) {
+            throw new IllegalArgumentException("Contact list does not exist");
+        }
+
+        userContactList.deleteContact(contactId);
 
         contactListRepository.save(userContactList);
     }

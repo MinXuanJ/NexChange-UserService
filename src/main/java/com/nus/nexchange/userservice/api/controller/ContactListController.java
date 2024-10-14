@@ -34,8 +34,7 @@ public class ContactListController {
     @PostMapping("/new-contact")
     public ResponseEntity<String> addContact(@RequestBody ContactDTO contactDTO) {
         try {
-            ContactListDTO contactListFromDB = contactListQuery.getContactListByUserId(contactDTO.getContactListId());
-            contactListCommand.addContact(contactListFromDB,contactDTO);
+            contactListCommand.addContact(contactDTO);
             return ResponseEntity.ok("Added contact");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -50,8 +49,7 @@ public class ContactListController {
     @PutMapping("/update")
     public ResponseEntity<String> updateContact(@RequestBody ContactDTO contactDTO) {
         try {
-            ContactListDTO contactListFromDB = contactListQuery.getContactListByUserId(contactDTO.getContactListId());
-            contactListCommand.updateContact(contactListFromDB,contactDTO);
+            contactListCommand.updateContact(contactDTO);
             return ResponseEntity.ok("Updated contact");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -61,9 +59,7 @@ public class ContactListController {
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteContact(@RequestParam UUID contactListId, @RequestParam UUID contactId) {
         try {
-            ContactListDTO contactListFromDB = contactListQuery.getContactListByUserId(contactListId);
-
-            contactListCommand.removeContact(contactId,contactListFromDB);
+            contactListCommand.removeContact(contactId, contactListId);
             return ResponseEntity.ok("Removed contact");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

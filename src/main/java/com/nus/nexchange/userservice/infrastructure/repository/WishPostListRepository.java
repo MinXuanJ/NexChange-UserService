@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface WishPostListRepository extends JpaRepository<UserWishPostList,UUID> {
-
+public interface WishPostListRepository extends JpaRepository<UserWishPostList, UUID> {
+    public UserWishPostList findByUserId(UUID userId);
 }

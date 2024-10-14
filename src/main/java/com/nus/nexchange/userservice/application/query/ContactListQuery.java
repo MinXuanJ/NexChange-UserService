@@ -27,12 +27,12 @@ public class ContactListQuery implements IContactListQuery {
         return getContactListDTO(userContactList);
     }
 
-    @Override
-    public ContactListDTO getContactListById(UUID contactListId) {
-        UserContactList userContactList = contactListRepository.findById(contactListId).orElse(null);
-
-        return getContactListDTO(userContactList);
-    }
+//    @Override
+//    public ContactListDTO getContactListById(UUID contactListId) {
+//        UserContactList userContactList = contactListRepository.findById(contactListId).orElse(null);
+//
+//        return getContactListDTO(userContactList);
+//    }
 
     private ContactListDTO getContactListDTO(UserContactList userContactList) {
         if (userContactList == null) {

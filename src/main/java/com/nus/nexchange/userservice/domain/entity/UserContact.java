@@ -24,7 +24,7 @@ public class UserContact {
 
     private String contactNumber;
 
-    private boolean isDefaultContact;
+    private boolean defaultContact;
 
     @ManyToOne
     @JoinColumn(name = "contact_listing_id", nullable = false)

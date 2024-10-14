@@ -10,17 +10,17 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
-public class UserWishpost {
+public class UserWishPost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID wishPostId;
+    private UUID postId;
 
     private UUID refPostId;
 
     private String refPostTitle;
 
-    private PostStatus status;
+    private PostStatus refPostStatus;
 
     @ManyToOne
     @JoinColumn(name = "wishpost_list_id",nullable = false)

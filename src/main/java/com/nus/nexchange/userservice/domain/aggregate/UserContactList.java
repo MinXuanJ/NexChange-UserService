@@ -28,12 +28,12 @@ public class UserContactList {
         userContacts = new ArrayList<UserContact>();
     }
 
-    public void createContactInfo(UserContact userContact) {
+    public void addContact(UserContact userContact) {
         userContacts.add(userContact);
         userContact.setUserContactList(this);
     }
 
-    public void updateContactInfo(UserContact userContact) {
+    public void updateContact(UserContact userContact) {
         if (userContact == null || userContact.getContactId() == null) {
             throw new IllegalArgumentException("Updated contact or its ID cannot be null");
         }
@@ -49,7 +49,7 @@ public class UserContactList {
         existingContact.setContactNumber(userContact.getContactNumber());
     }
 
-    public void deleteContactInfo(UUID contactId) {
+    public void deleteContact(UUID contactId) {
         UserContact userContactToRemove = userContacts.stream()
                 .filter(contact -> contact.getContactId().equals(contactId))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("Contact not found"));

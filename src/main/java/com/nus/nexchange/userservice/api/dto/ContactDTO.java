@@ -6,7 +6,6 @@ import java.util.UUID;
 
 @Data
 public class ContactDTO {
-    //    private UUID userId;
     private UUID contactListId;
 
     private UUID contactId;
@@ -19,5 +18,5 @@ public class ContactDTO {
 
     private String contactNumber;
 
-    private boolean isDefaultContact;
+    private boolean defaultContact;
 }
