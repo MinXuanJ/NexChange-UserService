@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface PostHistoryListRepository extends JpaRepository<UserPostHistoryList, UUID> {
+    public UserPostHistoryList findByUserId(UUID userId);
 }

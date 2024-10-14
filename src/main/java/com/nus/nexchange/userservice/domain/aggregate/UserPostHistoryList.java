@@ -26,4 +26,13 @@ public class UserPostHistoryList {
         this.userId = userId;
         userPostHistories = new ArrayList<>();
     }
+
+    public void deletePostHistory(UUID postHistoryId){
+        UserPostHistory postHistory = userPostHistories.stream()
+                .filter(userPostHistory -> userPostHistory.getPostId().equals(postHistoryId))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("UserPostHistory not found"));
+
+        userPostHistories.remove(postHistory);
+        postHistory.setUserPostHistoryList(null);
+    }
 }
