@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public class MyUserDetails implements UserDetails {
     private final UserIdentity user;
@@ -21,6 +22,10 @@ public class MyUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
+    }
+
+    public UUID getUserId(){
+        return user.getUserId();
     }
 
     @Override
