@@ -1,7 +1,7 @@
 package com.nus.nexchange.userservice.application.query;
 
-import com.nus.nexchange.userservice.api.dto.ContactDTO;
-import com.nus.nexchange.userservice.api.dto.ContactListDTO;
+import com.nus.nexchange.userservice.api.dto.Contacts.ContactDTO;
+import com.nus.nexchange.userservice.api.dto.Contacts.ContactListDTO;
 import com.nus.nexchange.userservice.domain.aggregate.UserContactList;
 import com.nus.nexchange.userservice.infrastructure.repository.ContactListRepository;
 import org.modelmapper.ModelMapper;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ContactListQuery implements IContactListQuery{
+public class ContactListQuery implements IContactListQuery {
 
     @Autowired
     private ContactListRepository contactListRepository;
@@ -24,10 +24,29 @@ public class ContactListQuery implements IContactListQuery{
     public ContactListDTO getContactListByUserId(UUID userId) {
         UserContactList userContactList = contactListRepository.findByUserId(userId);
 
+        return getContactListDTO(userContactList);
+    }
+
+//    @Override
+//    public ContactListDTO getContactListById(UUID contactListId) {
+//        UserContactList userContactList = contactListRepository.findById(contactListId).orElse(null);
+//
+//        return getContactListDTO(userContactList);
+//    }
+
+    private ContactListDTO getContactListDTO(UserContactList userContactList) {
+        if (userContactList == null) {
+            throw new IllegalArgumentException("Contact list not found");
+        }
+
         ContactListDTO contactListDTO = modelMapper.map(userContactList, ContactListDTO.class);
 
         List<ContactDTO> contactDTOs = userContactList.getUserContacts().stream()
-                .map(userContact -> modelMapper.map(userContact,ContactDTO.class))
+                .map(userContact -> {
+                    ContactDTO contactDTO = modelMapper.map(userContact, ContactDTO.class);
+                    contactDTO.setContactListId(userContactList.getContactListId());
+                    return contactDTO;
+                })
                 .toList();
 
         contactListDTO.setUserContacts(contactDTOs);

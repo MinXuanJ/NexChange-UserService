@@ -2,6 +2,7 @@ package com.nus.nexchange.userservice.api.controller;
 
 import com.nus.nexchange.userservice.api.dto.AuthenticationResponse;
 import com.nus.nexchange.userservice.api.dto.UserDTO;
+import com.nus.nexchange.userservice.application.security.MyUserDetails;
 import com.nus.nexchange.userservice.application.security.RedisService;
 import com.nus.nexchange.userservice.infrastructure.security.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,17 +41,15 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email or password");
         }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(userDTO.getUserEmail());
+        final MyUserDetails userDetails = (MyUserDetails) userDetailsService.loadUserByUsername(userDTO.getUserEmail());
         String token = jwtUtil.generateToken(userDetails.getUsername());
         long expiresIn = jwtUtil.getExpirationTime();
-        return ResponseEntity.ok(new AuthenticationResponse(token, expiresIn));
+        return ResponseEntity.ok(new AuthenticationResponse(token, expiresIn, userDetails.getUserId()));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorizationHeader) {
         // 从请求头中获取 JWT
-        final String authorizationHeader = request.getHeader("Authorization");
-
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String jwt = authorizationHeader.substring(7);
 

@@ -1,11 +1,9 @@
 package com.nus.nexchange.userservice.api.controller;
 
-import com.nus.nexchange.userservice.api.dto.ContactDTO;
-import com.nus.nexchange.userservice.api.dto.ContactListDTO;
+import com.nus.nexchange.userservice.api.dto.Contacts.ContactDTO;
+import com.nus.nexchange.userservice.api.dto.Contacts.ContactListDTO;
 import com.nus.nexchange.userservice.application.command.ContactListCommand;
 import com.nus.nexchange.userservice.application.query.ContactListQuery;
-import com.nus.nexchange.userservice.domain.aggregate.UserContactList;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +19,14 @@ public class ContactListController {
     @Autowired
     private ContactListCommand contactListCommand;
 
-    @PostMapping
-    public ResponseEntity<ContactListDTO> viewContactList(@RequestBody ContactListDTO contactListDTO) {
-        ContactListDTO userContactList = contactListQuery.getContactListByUserId(contactListDTO.getUserId());
-
-        return ResponseEntity.ok(userContactList);
+    @GetMapping("/{userId}")
+    public ResponseEntity<ContactListDTO> viewContactList(@PathVariable UUID userId) {
+        try {
+            ContactListDTO userContactList = contactListQuery.getContactListByUserId(userId);
+            return ResponseEntity.ok(userContactList);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/new-contact")
@@ -43,22 +44,22 @@ public class ContactListController {
 //
 //    }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<String> updateContact(@RequestBody ContactDTO contactDTO) {
-        try{
+        try {
             contactListCommand.updateContact(contactDTO);
             return ResponseEntity.ok("Updated contact");
-        }catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<String> deleteContact(@RequestBody ContactDTO contactDTO) {
-        try{
-            contactListCommand.removeContact(contactDTO);
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteContact(@RequestParam UUID contactListId, @RequestParam UUID contactId) {
+        try {
+            contactListCommand.removeContact(contactId, contactListId);
             return ResponseEntity.ok("Removed contact");
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

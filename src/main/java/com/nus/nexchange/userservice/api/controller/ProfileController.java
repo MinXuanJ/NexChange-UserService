@@ -21,11 +21,14 @@ public class ProfileController {
     @Autowired
     private ProfileCommand profileCommand;
 
-    @PostMapping
-    public ResponseEntity<ProfileDTO> viewProfile(@RequestBody ProfileDTO profileDTO) {
-        ProfileDTO userProfile = profileQuery.getUserProfileByUserId(profileDTO.getUserId());
-
-        return ResponseEntity.ok(userProfile);
+    @GetMapping("/{userId}")
+    public ResponseEntity<ProfileDTO> viewProfile(@PathVariable UUID userId) {
+        try {
+            ProfileDTO userProfile = profileQuery.getUserProfileByUserId(userId);
+            return ResponseEntity.ok(userProfile);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 //    @PostMapping("/newProfile")

@@ -14,7 +14,7 @@ public class UserPostHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID postHistoryId;
+    private UUID postId;
 
     private UUID refPostId;
 

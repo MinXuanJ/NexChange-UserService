@@ -1,4 +1,4 @@
-package com.nus.nexchange.userservice.api.dto;
+package com.nus.nexchange.userservice.api.dto.Contacts;
 
 import lombok.Data;
 
@@ -6,8 +6,8 @@ import java.util.UUID;
 
 @Data
 public class ContactDTO {
-    private UUID userId;
-    
+    private UUID contactListId;
+
     private UUID contactId;
 
     private String contactName;
@@ -18,5 +18,5 @@ public class ContactDTO {
 
     private String contactNumber;
 
-    private boolean isDefaultContact;
+    private boolean defaultContact;
 }

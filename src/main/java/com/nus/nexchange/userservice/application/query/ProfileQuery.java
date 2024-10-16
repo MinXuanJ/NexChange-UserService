@@ -27,4 +27,13 @@ public class ProfileQuery implements IProfileQuery {
         }
         return modelMapper.map(profile, ProfileDTO.class);
     }
+
+    @Override
+    public ProfileDTO getProfile(UUID profileId){
+        UserProfile profile = profileRepository.findById(profileId).orElse(null);
+        if(profile == null) {
+            throw new IllegalArgumentException("Profile not found");
+        }
+        return modelMapper.map(profile, ProfileDTO.class);
+    }
 }

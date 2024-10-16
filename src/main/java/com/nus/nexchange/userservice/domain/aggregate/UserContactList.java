@@ -16,24 +16,24 @@ public class UserContactList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID contactListingId;
+    private UUID contactListId;
 
     private UUID userId;
 
-    @OneToMany(mappedBy = "userContactList")
+    @OneToMany(mappedBy = "userContactList",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<UserContact> userContacts;
 
     public UserContactList(UUID userId) {
         this.userId = userId;
-        userContacts = new ArrayList<UserContact>();
+        userContacts = new ArrayList<>();
     }
 
-    public void createContactInfo(UserContact userContact) {
+    public void addContact(UserContact userContact) {
         userContacts.add(userContact);
         userContact.setUserContactList(this);
     }
 
-    public void updateContactInfo(UserContact userContact) {
+    public void updateContact(UserContact userContact) {
         if (userContact == null || userContact.getContactId() == null) {
             throw new IllegalArgumentException("Updated contact or its ID cannot be null");
         }
@@ -47,9 +47,10 @@ public class UserContactList {
         existingContact.setContactAddress(userContact.getContactAddress());
         existingContact.setPostalCode(userContact.getPostalCode());
         existingContact.setContactNumber(userContact.getContactNumber());
+        existingContact.setDefaultContact(userContact.isDefaultContact());
     }
 
-    public void deleteContactInfo(UUID contactId) {
+    public void deleteContact(UUID contactId) {
         UserContact userContactToRemove = userContacts.stream()
                 .filter(contact -> contact.getContactId().equals(contactId))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("Contact not found"));

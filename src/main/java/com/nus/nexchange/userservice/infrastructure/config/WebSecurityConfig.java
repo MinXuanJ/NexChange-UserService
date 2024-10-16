@@ -19,7 +19,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/user-system/**").permitAll()  // Allow unauthenticated access to /authenticate
+                        .requestMatchers("/api/user-system/users/new-user","/api/user-system/auth/login").permitAll()  // Allow unauthenticated access to /authenticate
                         .anyRequest().authenticated()                   // All other requests require authentication
                 )
                 .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class) // Add your JWT filter
