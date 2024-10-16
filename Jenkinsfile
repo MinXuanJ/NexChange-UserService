@@ -5,8 +5,8 @@ pipeline {
         DOCKER_CREDENTIALS = 'docker_hub_credentials'
         DOCKER_IMAGE = "jmx7139/nexchange-userservice"
         SONAR_PROJECT_KEY = 'MinXuanJ_NexChange-UserService'
-        SONAR_HOST_URL = 'https://sonarcloud.io/project/overview?id=MinXuanJ_NexChange-UserService'
-        SONAR_LOGIN = '6850d62da33742ee455c430f10fabdda0f4803c2'
+        SONAR_HOST_URL = 'https://sonarcloud.io'
+//        SONAR_LOGIN = '6850d62da33742ee455c430f10fabdda0f4803c2'
     }
 
     parameters {
@@ -34,13 +34,15 @@ pipeline {
         stage('Static Code Analysis') {
             steps {
                 script {
-                    withSonarQubeEnv('SonarQube') {
-                        sh """
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-                        -Dsonar.host.url=$SONAR_HOST_URL \
-                        -Dsonar.login=$SONAR_LOGIN
-                        """
+                    withCredentials([string(credentialsId: 'NEXCHANGE_SONARCLOUD_USERSERVICE_TOKEN', variable: 'SONAR_LOGIN')]) {
+                        withSonarQubeEnv('SonarQube') {
+                            sh """
+                    mvn sonar:sonar \
+                    -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                    -Dsonar.host.url=$SONAR_HOST_URL \
+                    -Dsonar.login=$SONAR_LOGIN
+                    """
+                        }
                     }
                 }
             }
