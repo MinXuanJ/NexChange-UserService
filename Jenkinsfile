@@ -22,14 +22,14 @@ pipeline {
             }
         }
 
-//        stage('Unit Test') {
-//            steps {
-//                script {
-//                    sh "mvn test"
-//                }
-//                junit '**/target/surefire-reports/*.xml'
-//             }
-//        }
+        stage('Unit Test') {
+            steps {
+                script {
+                    sh "mvn test"
+                }
+                junit '**/target/surefire-reports/*.xml'
+             }
+        }
 
         stage('Static Code Analysis') {
             steps {
@@ -40,7 +40,8 @@ pipeline {
                     mvn sonar:sonar \
                     -Dsonar.projectKey=$SONAR_PROJECT_KEY \
                     -Dsonar.host.url=$SONAR_HOST_URL \
-                    -Dsonar.login=$SONAR_LOGIN
+                    -Dsonar.login=$SONAR_LOGIN  \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
                     """
                         }
                     }
