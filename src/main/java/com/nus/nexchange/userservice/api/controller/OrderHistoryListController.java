@@ -20,10 +20,10 @@ public class OrderHistoryListController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<OrderHistoryListDTO> getOrderHistoryList(@PathVariable UUID userId) {
-        try{
+        try {
             OrderHistoryListDTO orderHistoryListDTO = orderHistoryListQuery.getOrderHistoryListByUserId(userId);
             return ResponseEntity.ok(orderHistoryListDTO);
-        }catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -39,11 +39,11 @@ public class OrderHistoryListController {
 //    }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteOrderHistoryList(@RequestParam UUID orderHistoryListId,@RequestParam UUID orderHistoryId) {
-        try{
+    public ResponseEntity<String> deleteOrderHistoryList(@RequestParam UUID orderHistoryListId, @RequestParam UUID orderHistoryId) {
+        try {
             orderHistoryListCommand.removeOrderHistory(orderHistoryId, orderHistoryListId);
             return ResponseEntity.ok("Deleted order history");
-        }catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

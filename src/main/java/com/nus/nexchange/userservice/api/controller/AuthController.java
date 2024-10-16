@@ -4,6 +4,7 @@ import com.nus.nexchange.userservice.api.dto.AuthenticationResponse;
 import com.nus.nexchange.userservice.api.dto.UserDTO;
 import com.nus.nexchange.userservice.application.security.MyUserDetails;
 import com.nus.nexchange.userservice.application.security.RedisService;
+import com.nus.nexchange.userservice.infrastructure.messaging.KafkaProducer;
 import com.nus.nexchange.userservice.infrastructure.security.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class AuthController {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDTO) throws Exception {
         try {
@@ -44,6 +48,7 @@ public class AuthController {
         final MyUserDetails userDetails = (MyUserDetails) userDetailsService.loadUserByUsername(userDTO.getUserEmail());
         String token = jwtUtil.generateToken(userDetails.getUsername());
         long expiresIn = jwtUtil.getExpirationTime();
+        kafkaProducer.sendMessage("Login","Success Login");
         return ResponseEntity.ok(new AuthenticationResponse(token, expiresIn, userDetails.getUserId()));
     }
 
