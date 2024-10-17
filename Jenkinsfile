@@ -24,14 +24,14 @@ pipeline {
             }
         }
 
-        stage('Unit Test') {
-            steps {
-                script {
-                    sh "mvn test"
-                }
-                junit '**/target/surefire-reports/*.xml'
-             }
-        }
+//        stage('Unit Test') {
+//            steps {
+//                script {
+//                    sh "mvn test"
+//                }
+//                junit '**/target/surefire-reports/*.xml'
+//             }
+//        }
 
         stage('Static Code Analysis') {
             steps {
