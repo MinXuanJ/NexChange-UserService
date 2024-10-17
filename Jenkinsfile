@@ -7,6 +7,7 @@ pipeline {
         DOCKER_CREDENTIALS = 'docker_hub_credentials'
         DOCKER_IMAGE = "jmx7139/nexchange-userservice"
         SONAR_PROJECT_KEY = 'MinXuanJ_NexChange-UserService'
+        SONAR_ORGANIZATION_KEY = 'NexChange'
         SONAR_HOST_URL = 'https://sonarcloud.io'
 //        SONAR_LOGIN = '6850d62da33742ee455c430f10fabdda0f4803c2'
     }
@@ -41,6 +42,7 @@ pipeline {
                             sh """
                     mvn sonar:sonar \
                     -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                    -Dsonar.organization=$SONAR_ORGANIZATION_KEY \
                     -Dsonar.host.url=$SONAR_HOST_URL \
                     -Dsonar.login=$SONAR_LOGIN  \
                     -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
