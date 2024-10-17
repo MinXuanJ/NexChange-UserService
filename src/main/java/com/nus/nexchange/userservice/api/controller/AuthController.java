@@ -48,7 +48,6 @@ public class AuthController {
         final MyUserDetails userDetails = (MyUserDetails) userDetailsService.loadUserByUsername(userDTO.getUserEmail());
         String token = jwtUtil.generateToken(userDetails.getUsername());
         long expiresIn = jwtUtil.getExpirationTime();
-        kafkaProducer.sendMessage("Login","Success Login");
         return ResponseEntity.ok(new AuthenticationResponse(token, expiresIn, userDetails.getUserId()));
     }
 
