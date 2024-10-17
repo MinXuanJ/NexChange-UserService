@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexchange-userservice
+  labels:
+    app: nexchange-userservice
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nexchange-userservice
+  template:
+    metadata:
+      labels:
+        app: nexchange-userservice
+    spec:
+      initContainers:
+        - name: wait-for-kafka
+          image: busybox
+          command: ['sh', '-c', 'until nc -z kafka 9092; do echo waiting for kafka; sleep 2; done;']
+      containers:
+        - name: nexchange-userservice
+          image: jmx7139/nexchange-userservice:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: userservice-config
+                  key: MYSQL_HOST
+            - name: MYSQL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: userservice-config
+                  key: MYSQL_PORT
+            - name: MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: user-name
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: user-password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: jwt-secret-key
+      imagePullSecrets:
+        - name: docker-hub-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexchange-userservice
+spec:
+  selector:
+    app: nexchange-userservice
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081
+  type: LoadBalancer

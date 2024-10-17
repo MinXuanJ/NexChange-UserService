@@ -17,6 +17,16 @@ pipeline {
     }
 
     stages {
+        stages {
+            stage('Start Docker Services') {
+                steps {
+                    script {
+                        sh 'docker-compose up -d'
+                    }
+                }
+            }
+        }
+
         stage('Build and Package') {
             steps {
                 script {
@@ -89,6 +99,79 @@ pipeline {
                     sh '''
                 docker images --format "{{.ID}} {{.Repository}} {{.Tag}} {{.CreatedAt}}" | grep $DOCKER_IMAGE | sort -r | awk 'NR>2 {print $1}' | xargs -r docker rmi
             '''
+                    sh "docker images"
+                }
+            }
+        }
+
+        stage('Stop Docker Services') {
+            steps {
+                script {
+                    sh 'docker-compose down'
+                }
+            }
+        }
+
+        stage('Deploy Docker Secret') {
+            steps {
+                script {
+                    def secretExists = sh(
+                            script: "kubectl get secret docker-hub-secret --ignore-not-found",
+                            returnStatus: true
+                    ) == 0
+
+                    if (!secretExists) {
+                        withCredentials([usernamePassword(credentialsId: 'docker_hub_credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            sh """
+                    kubectl create secret docker-registry docker-hub-secret \\
+                      --docker-username=$USERNAME \\
+                      --docker-password=$PASSWORD
+                    """
+                        }
+                    } else {
+                        echo "Docker Hub Secret already exists, skipping creation."
+                    }
+                }
+            }
+        }
+
+
+        stage('Deploy Zookeeper') {
+            steps {
+                script {
+                    sh 'kubectl apply -f zookeeper-deployment.yaml'
+                }
+            }
+        }
+
+        stage('Deploy Kafka') {
+            steps {
+                script {
+                    sh 'kubectl apply -f kafka-deployment.yaml'
+                }
+            }
+        }
+
+        stage('Deploy MySQL') {
+            steps {
+                script {
+                    sh 'kubectl apply -f mysql-deployment.yaml'
+                }
+            }
+        }
+
+        stage('Deploy Redis') {
+            steps {
+                script {
+                    sh 'kubectl apply -f redis-deployment.yaml'
+                }
+            }
+        }
+
+        stage('Deploy User Service') {
+            steps {
+                script {
+                    sh 'kubectl apply -f deployment.yaml'
                 }
             }
         }

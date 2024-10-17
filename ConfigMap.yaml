@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: userservice-config
+data:
+  MYSQL_HOST: "mysql-service"
+  MYSQL_PORT: "3306"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
