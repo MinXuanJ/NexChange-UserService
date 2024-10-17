@@ -2,6 +2,8 @@ pipeline {
     agent any
 
     environment {
+        MYSQL_PASSWORD = credentials('NEXCHANGE_USERSERVICE_MYSQL_PASSWORD')
+        JWT_SECRET = credentials('NEXCHANGE_USERSERVICE_JWT_SECRET')
         DOCKER_CREDENTIALS = 'docker_hub_credentials'
         DOCKER_IMAGE = "jmx7139/nexchange-userservice"
         SONAR_PROJECT_KEY = 'MinXuanJ_NexChange-UserService'
