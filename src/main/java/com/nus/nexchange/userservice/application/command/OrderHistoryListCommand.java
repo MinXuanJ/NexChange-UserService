@@ -1,7 +1,8 @@
 package com.nus.nexchange.userservice.application.command;
 
-import com.nus.nexchange.userservice.application.query.OrderHistoryListQuery;
+import com.nus.nexchange.userservice.api.dto.OrderHistories.OrderHistoryDTO;
 import com.nus.nexchange.userservice.domain.aggregate.UserOrderHistoryList;
+import com.nus.nexchange.userservice.domain.entity.UserOrderHistory;
 import com.nus.nexchange.userservice.infrastructure.repository.OrderHistoryListRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,34 @@ public class OrderHistoryListCommand implements IOrderHistoryListCommand {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Override
+    public void addOrderHistory(OrderHistoryDTO orderHistoryDTO) {
+        UserOrderHistory userOrderHistory = modelMapper.map(orderHistoryDTO, UserOrderHistory.class);
+        UserOrderHistoryList userOrderHistoryList = orderHistoryListRepository.findByUserId(orderHistoryDTO.getUserId());
+
+        if (userOrderHistoryList == null) {
+            throw new IllegalArgumentException("Order history list not found");
+        }
+
+        userOrderHistoryList.addUserOrderHistory(userOrderHistory);
+
+        orderHistoryListRepository.save(userOrderHistoryList);
+    }
+
+    @Override
+    public void updateOrderHistory(OrderHistoryDTO orderHistoryDTO) {
+        UserOrderHistory userOrderHistory = modelMapper.map(orderHistoryDTO, UserOrderHistory.class);
+        UserOrderHistoryList userOrderHistoryList = orderHistoryListRepository.findByUserId(orderHistoryDTO.getUserId());
+
+        if (userOrderHistoryList == null) {
+            throw new IllegalArgumentException("Order history list not found");
+        }
+
+        userOrderHistoryList.updateUserOrderHistory(userOrderHistory);
+
+        orderHistoryListRepository.save(userOrderHistoryList);
+    }
 
     @Override
     public void removeOrderHistory(UUID orderHistoryId, UUID orderHistoryListId) {

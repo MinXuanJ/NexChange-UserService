@@ -9,6 +9,8 @@ import java.util.UUID;
 public class OrderHistoryDTO {
     private UUID orderHistoryListId;
 
+    private UUID userId;
+
     private UUID orderHistoryId;
 
     private UUID refOrderId;

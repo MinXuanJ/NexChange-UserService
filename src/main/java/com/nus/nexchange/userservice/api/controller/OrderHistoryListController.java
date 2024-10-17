@@ -3,6 +3,7 @@ package com.nus.nexchange.userservice.api.controller;
 import com.nus.nexchange.userservice.api.dto.OrderHistories.OrderHistoryListDTO;
 import com.nus.nexchange.userservice.application.command.OrderHistoryListCommand;
 import com.nus.nexchange.userservice.application.query.OrderHistoryListQuery;
+import com.nus.nexchange.userservice.infrastructure.messaging.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,9 @@ public class OrderHistoryListController {
 
     @Autowired
     private OrderHistoryListCommand orderHistoryListCommand;
+
+    @Autowired
+    private KafkaProducer kafkaProducer;
 
     @GetMapping("/{userId}")
     public ResponseEntity<OrderHistoryListDTO> getOrderHistoryList(@PathVariable UUID userId) {
@@ -42,6 +46,7 @@ public class OrderHistoryListController {
     public ResponseEntity<String> deleteOrderHistoryList(@RequestParam UUID orderHistoryListId, @RequestParam UUID orderHistoryId) {
         try {
             orderHistoryListCommand.removeOrderHistory(orderHistoryId, orderHistoryListId);
+            kafkaProducer.sendDTO("Order History Delete",orderHistoryId);
             return ResponseEntity.ok("Deleted order history");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

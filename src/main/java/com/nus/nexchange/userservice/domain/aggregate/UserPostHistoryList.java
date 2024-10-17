@@ -27,6 +27,25 @@ public class UserPostHistoryList {
         userPostHistories = new ArrayList<>();
     }
 
+    public void addPostHistory(UserPostHistory userPostHistory) {
+        userPostHistories.add(userPostHistory);
+        userPostHistory.setUserPostHistoryList(this);
+    }
+
+    public void updatePostHistory(UserPostHistory userPostHistory) {
+        if(userPostHistory == null||userPostHistory.getPostId()==null){
+            throw new IllegalArgumentException("userPostHistory is null");
+        }
+
+        UserPostHistory existingUserPostHistory = userPostHistories.stream()
+                .filter(userPostHistoryDB->userPostHistoryDB.getPostId().equals(userPostHistory.getPostId()))
+                .findFirst().orElse(null);
+
+        existingUserPostHistory.setRefPostTitle(userPostHistory.getRefPostTitle());
+        existingUserPostHistory.setRefPostStatus(userPostHistory.getRefPostStatus());
+        existingUserPostHistory.setRefPostShortCutURL(userPostHistory.getRefPostShortCutURL());
+    }
+
     public void deletePostHistory(UUID postHistoryId){
         UserPostHistory postHistory = userPostHistories.stream()
                 .filter(userPostHistory -> userPostHistory.getPostId().equals(postHistoryId))

@@ -20,7 +20,7 @@ public class KafkaProducer {
         kafkaTemplate.send(topic, message);
     }
 
-    public void sendUserDTO(String topic,UserDTO userDTO) {
-        kafkaObjectTemplate.send(topic,userDTO);
+    public void sendDTO(String topic,Object DTO) {
+        kafkaObjectTemplate.send(topic,DTO);
     }
 }

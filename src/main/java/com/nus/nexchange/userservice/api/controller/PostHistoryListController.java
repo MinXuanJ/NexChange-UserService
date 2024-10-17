@@ -3,6 +3,7 @@ package com.nus.nexchange.userservice.api.controller;
 import com.nus.nexchange.userservice.api.dto.PostHistories.PostHistoryListDTO;
 import com.nus.nexchange.userservice.application.command.PostHistoryListCommand;
 import com.nus.nexchange.userservice.application.query.PostHistoryListQuery;
+import com.nus.nexchange.userservice.infrastructure.messaging.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,9 @@ public class PostHistoryListController {
 
     @Autowired
     private PostHistoryListCommand postHistoryListCommand;
+
+    @Autowired
+    private KafkaProducer kafkaProducer;
 
     @GetMapping("/{userId}")
     public ResponseEntity<PostHistoryListDTO> getPostHistoryList(@PathVariable UUID userId) {
@@ -42,6 +46,7 @@ public class PostHistoryListController {
     public ResponseEntity<String> deletePostHistoryList(@RequestParam UUID postHistoryListId, @RequestParam UUID postHistoryId) {
         try {
             postHistoryListCommand.removePostHistory(postHistoryId, postHistoryListId);
+            kafkaProducer.sendDTO("Post History Delete",postHistoryId);
             return ResponseEntity.ok("Deleted post history");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
