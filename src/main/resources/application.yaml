@@ -1,6 +1,7 @@
 spring:
   config:
-    import: "file:./src/main/resources/secret.properties"
+#    import: "file:./src/main/resources/secret.properties"
+  import: "optional:classpath:secret.properties"
   datasource:
     url: jdbc:mysql://localhost:3306/NexChangeUserDB
     username: root
