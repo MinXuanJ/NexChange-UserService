@@ -114,25 +114,28 @@ pipeline {
         stage('Deploy Docker Secret') {
             steps {
                 script {
-                    // 检查 Kubernetes 中的 Secret 是否已存在
+                    def namespace = "default"
+                    def secretName = "docker-hub-secret"
+
+                    // 检查 Secret 是否存在
                     def secretExists = sh(
-                            script: "kubectl get secret docker-hub-secret --ignore-not-found",
+                            script: "kubectl get secret ${secretName} -n ${namespace} --ignore-not-found",
                             returnStatus: true
                     ) == 0
 
                     if (!secretExists) {
+                        echo "Docker Hub Secret 不存在，正在创建..."
                         // 使用 Jenkins 的凭据插件获取 DockerHub 用户名和密码
-                        withCredentials([string(credentialsId: 'jwt_secret', variable: 'JWT_SECRET'),
-                                         usernamePassword(credentialsId: 'docker_hub_credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-
-                            // 在 Kubernetes 集群中创建 Docker 注册表密钥
+                        withCredentials([usernamePassword(credentialsId: 'docker_hub_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                            // 创建 Secret，不包含 Docker server 和 email
                             sh """
-                                kubectl create secret docker-registry docker-hub-secret \
-                                --docker-username=$USERNAME \
-                                --docker-password=$PASSWORD \
-                                -n default
-                            """
+                        kubectl create secret docker-registry ${secretName} \
+                        --docker-username=${DOCKER_USERNAME} \
+                        --docker-password=${DOCKER_PASSWORD} \
+                        -n ${namespace}
+                    """
                         }
+                        echo "Docker Hub Secret 创建成功。"
                     } else {
                         echo "Docker Hub Secret 已存在，跳过创建步骤。"
                     }
