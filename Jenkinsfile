@@ -127,7 +127,7 @@ pipeline {
 
                             // 在 Kubernetes 集群中创建 Docker 注册表密钥
                             sh """
-                        kubectl create secret docker-registry docker-hub-${JWT_SECRET} \
+                        kubectl create secret docker-registry docker-hub-secret \
                         --docker-username=$USERNAME \
                         --docker-password=$PASSWORD \
                         -n default
