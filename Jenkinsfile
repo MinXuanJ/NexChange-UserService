@@ -129,11 +129,11 @@ pipeline {
                         withCredentials([usernamePassword(credentialsId: 'docker_hub_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                             // 创建 Secret，不包含 Docker server 和 email
                             sh """
-                        kubectl create secret docker-registry ${secretName} \
-                        --docker-username=${DOCKER_USERNAME} \
-                        --docker-password=${DOCKER_PASSWORD} \
-                        -n ${namespace}
-                    """
+                                kubectl create secret docker-registry ${secretName} \
+                                --docker-username=\$DOCKER_USERNAME \
+                                --docker-password=\$DOCKER_PASSWORD \
+                                -n ${namespace}
+                            """
                         }
                         echo "Docker Hub Secret 创建成功。"
                     } else {
@@ -142,6 +142,7 @@ pipeline {
                 }
             }
         }
+
 
         stage('Deploy Zookeeper') {
             steps {
