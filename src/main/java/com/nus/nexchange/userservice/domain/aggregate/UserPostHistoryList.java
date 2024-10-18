@@ -33,14 +33,15 @@ public class UserPostHistoryList {
     }
 
     public void updatePostHistory(UserPostHistory userPostHistory) {
-        if(userPostHistory == null||userPostHistory.getPostId()==null){
+        if(userPostHistory == null||userPostHistory.getPostHistoryId()==null){
             throw new IllegalArgumentException("userPostHistory is null");
         }
 
         UserPostHistory existingUserPostHistory = userPostHistories.stream()
-                .filter(userPostHistoryDB->userPostHistoryDB.getPostId().equals(userPostHistory.getPostId()))
+                .filter(userPostHistoryDB->userPostHistoryDB.getPostHistoryId().equals(userPostHistory.getPostHistoryId()))
                 .findFirst().orElse(null);
 
+        existingUserPostHistory.setRefPostId(userPostHistory.getRefPostId());
         existingUserPostHistory.setRefPostTitle(userPostHistory.getRefPostTitle());
         existingUserPostHistory.setRefPostStatus(userPostHistory.getRefPostStatus());
         existingUserPostHistory.setRefPostShortCutURL(userPostHistory.getRefPostShortCutURL());
@@ -48,7 +49,7 @@ public class UserPostHistoryList {
 
     public void deletePostHistory(UUID postHistoryId){
         UserPostHistory postHistory = userPostHistories.stream()
-                .filter(userPostHistory -> userPostHistory.getPostId().equals(postHistoryId))
+                .filter(userPostHistory -> userPostHistory.getPostHistoryId().equals(postHistoryId))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("UserPostHistory not found"));
 
         userPostHistories.remove(postHistory);

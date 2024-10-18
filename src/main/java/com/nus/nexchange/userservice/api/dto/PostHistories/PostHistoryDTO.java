@@ -11,7 +11,7 @@ public class PostHistoryDTO {
 
     private UUID userId;
 
-    private UUID postId;
+    private UUID postHistoryId;
 
     private UUID refPostId;
 
