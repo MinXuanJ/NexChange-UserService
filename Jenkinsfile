@@ -122,10 +122,11 @@ pipeline {
                     if (!secretExists) {
                         withCredentials([usernamePassword(credentialsId: 'docker_hub_credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                             sh """
-                    kubectl create secret docker-registry docker-hub-secret \\
-                      --docker-username=$USERNAME \\
-                      --docker-password=$PASSWORD
-                    """
+                                kubectl create secret docker-registry docker-hub-secret \
+                                --docker-username=$USERNAME \
+                                --docker-password=$PASSWORD \
+                            -n default
+                            """
                         }
                     } else {
                         echo "Docker Hub Secret already exists, skipping creation."
