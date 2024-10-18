@@ -127,11 +127,11 @@ pipeline {
 
                             // 在 Kubernetes 集群中创建 Docker 注册表密钥
                             sh """
-                        kubectl create secret docker-registry docker-hub-secret \
-                        --docker-username=$USERNAME \
-                        --docker-password=$PASSWORD \
-                        -n default
-                    """
+                                kubectl create secret docker-registry docker-hub-secret \
+                                --docker-username=$USERNAME \
+                                --docker-password=$PASSWORD \
+                                -n default
+                            """
                         }
                     } else {
                         echo "Docker Hub Secret 已存在，跳过创建步骤。"
