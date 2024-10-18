@@ -33,15 +33,14 @@ public class UserPostHistoryList {
     }
 
     public void updatePostHistory(UserPostHistory userPostHistory) {
-        if(userPostHistory == null||userPostHistory.getPostHistoryId()==null){
+        if(userPostHistory == null){
             throw new IllegalArgumentException("userPostHistory is null");
         }
 
         UserPostHistory existingUserPostHistory = userPostHistories.stream()
-                .filter(userPostHistoryDB->userPostHistoryDB.getPostHistoryId().equals(userPostHistory.getPostHistoryId()))
+                .filter(userPostHistoryDB->userPostHistoryDB.getRefPostId().equals(userPostHistory.getRefPostId()))
                 .findFirst().orElse(null);
 
-        existingUserPostHistory.setRefPostId(userPostHistory.getRefPostId());
         existingUserPostHistory.setRefPostTitle(userPostHistory.getRefPostTitle());
         existingUserPostHistory.setRefPostStatus(userPostHistory.getRefPostStatus());
         existingUserPostHistory.setRefPostShortCutURL(userPostHistory.getRefPostShortCutURL());

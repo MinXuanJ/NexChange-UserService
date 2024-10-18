@@ -53,8 +53,11 @@ public class KafkaConsumer {
     @Transactional
     public void postUpdateListen(String postDTOJson) {
         try {
+            System.out.println(postDTOJson);
             PostDTO postDTO = new ObjectMapper().readValue(postDTOJson, PostDTO.class);
+            System.out.println(postDTO);
             PostHistoryDTO postHistory = convertToPostHistoryDTO(postDTO);
+            System.out.println(postHistory);
             postHistoryListCommand.updatePostHistory(postHistory);
         } catch (Exception e) {
             e.printStackTrace();

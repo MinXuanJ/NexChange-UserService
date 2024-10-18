@@ -9,18 +9,11 @@ public class KafkaProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    private final KafkaTemplate<String,Object> kafkaObjectTemplate;
-
-    public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate, KafkaTemplate<String,Object> kafkaObjectTemplate) {
+    public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
-        this.kafkaObjectTemplate = kafkaObjectTemplate;
     }
 
     public void sendMessage(String topic, String message) {
         kafkaTemplate.send(topic, message);
-    }
-
-    public void sendDTO(String topic,Object DTO) {
-        kafkaObjectTemplate.send(topic,DTO);
     }
 }
