@@ -114,27 +114,31 @@ pipeline {
         stage('Deploy Docker Secret') {
             steps {
                 script {
+                    // 检查 Kubernetes 中的 Secret 是否已存在
                     def secretExists = sh(
                             script: "kubectl get secret docker-hub-secret --ignore-not-found",
                             returnStatus: true
                     ) == 0
 
                     if (!secretExists) {
-                        withCredentials([usernamePassword(credentialsId: 'docker_hub_credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                            sh '''
-                        kubectl create secret docker-registry docker-hub-secret \
+                        // 使用 Jenkins 的凭据插件获取 DockerHub 用户名和密码
+                        withCredentials([string(credentialsId: 'jwt_secret', variable: 'JWT_SECRET'),
+                                         usernamePassword(credentialsId: 'docker_hub_credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+
+                            // 在 Kubernetes 集群中创建 Docker 注册表密钥
+                            sh """
+                        kubectl create secret docker-registry docker-hub-${JWT_SECRET} \
                         --docker-username=$USERNAME \
                         --docker-password=$PASSWORD \
                         -n default
-                    '''
+                    """
                         }
                     } else {
-                        echo "Docker Hub Secret already exists, skipping creation."
+                        echo "Docker Hub Secret 已存在，跳过创建步骤。"
                     }
                 }
             }
         }
-
 
         stage('Deploy Zookeeper') {
             steps {
