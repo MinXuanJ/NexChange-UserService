@@ -46,7 +46,7 @@ public class OrderHistoryListController {
     public ResponseEntity<String> deleteOrderHistoryList(@RequestParam UUID orderHistoryListId, @RequestParam UUID orderHistoryId) {
         try {
             orderHistoryListCommand.removeOrderHistory(orderHistoryId, orderHistoryListId);
-            kafkaProducer.sendDTO("Order History Delete",orderHistoryId);
+//            kafkaProducer.sendDTO("Order History Delete",orderHistoryId);
             return ResponseEntity.ok("Deleted order history");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

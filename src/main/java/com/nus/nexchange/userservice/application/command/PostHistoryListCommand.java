@@ -38,15 +38,28 @@ public class PostHistoryListCommand implements IPostHistoryListCommand {
         postHistoryListRepository.save(userPostHistoryList);
     }
 
+//    @Override
+//    public void removePostHistory(UUID postHistoryId, UUID postHistoryListId){
+//        UserPostHistoryList postHistoryList = postHistoryListRepository.findById(postHistoryListId).orElse(null);
+//
+//        if(postHistoryList == null){
+//            throw new IllegalArgumentException("PostHistoryList not found");
+//        }
+//
+//        postHistoryList.deletePostHistory(postHistoryId);
+//
+//        postHistoryListRepository.save(postHistoryList);
+//    }
+
     @Override
-    public void removePostHistory(UUID postHistoryId, UUID postHistoryListId){
-        UserPostHistoryList postHistoryList = postHistoryListRepository.findById(postHistoryListId).orElse(null);
+    public void removePostHistory(UUID postId,UUID userId){
+        UserPostHistoryList postHistoryList = postHistoryListRepository.findByUserId(userId);
 
         if(postHistoryList == null){
             throw new IllegalArgumentException("PostHistoryList not found");
         }
 
-        postHistoryList.deletePostHistory(postHistoryId);
+        postHistoryList.deletePostHistoryByPostId(postId);
 
         postHistoryListRepository.save(postHistoryList);
     }

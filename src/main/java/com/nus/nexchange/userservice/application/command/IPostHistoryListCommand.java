@@ -7,5 +7,6 @@ import java.util.UUID;
 public interface IPostHistoryListCommand {
     public void addPostHistory(PostHistoryDTO postHistoryDTO);
     public void updatePostHistory(PostHistoryDTO postHistoryDTO);
-    public void removePostHistory(UUID postHistoryId,UUID postHistoryListId);
+//    public void removePostHistory(UUID postHistoryId,UUID postHistoryListId);
+    public void removePostHistory(UUID postId,UUID userId);
 }

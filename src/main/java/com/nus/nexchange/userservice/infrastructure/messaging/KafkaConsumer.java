@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class KafkaConsumer {
     @Autowired
@@ -53,13 +55,23 @@ public class KafkaConsumer {
     @Transactional
     public void postUpdateListen(String postDTOJson) {
         try {
-            System.out.println(postDTOJson);
             PostDTO postDTO = new ObjectMapper().readValue(postDTOJson, PostDTO.class);
-            System.out.println(postDTO);
             PostHistoryDTO postHistory = convertToPostHistoryDTO(postDTO);
-            System.out.println(postHistory);
             postHistoryListCommand.updatePostHistory(postHistory);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @KafkaListener(topics="deletePost")
+    @Transactional
+    public void deletePostListen(String postDTOJson) {
+        try{
+            PostDTO postDTO = new ObjectMapper().readValue(postDTOJson, PostDTO.class);
+            UUID userId = postDTO.getUserId();
+            UUID postId = postDTO.getPostId();
+            postHistoryListCommand.removePostHistory(postId,userId);
+        }catch(Exception e){
             e.printStackTrace();
         }
     }

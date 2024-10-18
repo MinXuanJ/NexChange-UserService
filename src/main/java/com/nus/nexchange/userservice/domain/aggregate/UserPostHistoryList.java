@@ -46,9 +46,18 @@ public class UserPostHistoryList {
         existingUserPostHistory.setRefPostShortCutURL(userPostHistory.getRefPostShortCutURL());
     }
 
-    public void deletePostHistory(UUID postHistoryId){
+//    public void deletePostHistory(UUID postHistoryId){
+//        UserPostHistory postHistory = userPostHistories.stream()
+//                .filter(userPostHistory -> userPostHistory.getPostHistoryId().equals(postHistoryId))
+//                .findFirst().orElseThrow(() -> new IllegalArgumentException("UserPostHistory not found"));
+//
+//        userPostHistories.remove(postHistory);
+//        postHistory.setUserPostHistoryList(null);
+//    }
+
+    public void deletePostHistoryByPostId(UUID postId){
         UserPostHistory postHistory = userPostHistories.stream()
-                .filter(userPostHistory -> userPostHistory.getPostHistoryId().equals(postHistoryId))
+                .filter(userPostHistory -> userPostHistory.getRefPostId().equals(postId))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("UserPostHistory not found"));
 
         userPostHistories.remove(postHistory);

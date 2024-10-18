@@ -42,14 +42,13 @@ public class PostHistoryListController {
 //
 //    }
 
-    @DeleteMapping
-    public ResponseEntity<String> deletePostHistoryList(@RequestParam UUID postHistoryListId, @RequestParam UUID postHistoryId) {
-        try {
-            postHistoryListCommand.removePostHistory(postHistoryId, postHistoryListId);
-            kafkaProducer.sendDTO("Post History Delete",postHistoryId);
-            return ResponseEntity.ok("Deleted post history");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    @DeleteMapping
+//    public ResponseEntity<String> deletePostHistoryList(@RequestParam UUID postHistoryListId, @RequestParam UUID postHistoryId) {
+//        try {
+//            postHistoryListCommand.removePostHistory(postHistoryId, postHistoryListId);
+//            return ResponseEntity.ok("Deleted post history");
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 }
