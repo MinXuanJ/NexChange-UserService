@@ -17,12 +17,11 @@ pipeline {
     }
 
     stages {
-        stages {
-            stage('Start Docker Services') {
-                steps {
-                    script {
-                        sh 'docker-compose up -d'
-                    }
+
+        stage('Start Docker Services') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
                 }
             }
         }
