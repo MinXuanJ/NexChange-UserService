@@ -1,3 +1,4 @@
+#<<<<<<< HEAD
 spring:
   config:
 #    import: "file:./src/main/resources/secret.properties"
@@ -27,3 +28,37 @@ logging:
     org.springframework.boot.context.config: DEBUG
     com.zaxxer.hikari: DEBUG
     org.hibernate.SQL: DEBUG
+#=======
+#spring:
+#  config:
+#    import: "file:./src/main/resources/secret.properties"
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/NexChangeUserDB
+#    username: root
+#    password: ${MYSQL_PASSWORD}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.MySQLDialect
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#    consumer:
+#      group-id: user-system
+#      auto-offset-reset: earliest
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      properties:
+#        spring.json.trusted.packages: "com.nus.nexchange.*"
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#server:
+#  port: 8081
+#>>>>>>> origin/master

@@ -27,9 +27,37 @@ public class UserPostHistoryList {
         userPostHistories = new ArrayList<>();
     }
 
-    public void deletePostHistory(UUID postHistoryId){
+    public void addPostHistory(UserPostHistory userPostHistory) {
+        userPostHistories.add(userPostHistory);
+        userPostHistory.setUserPostHistoryList(this);
+    }
+
+    public void updatePostHistory(UserPostHistory userPostHistory) {
+        if(userPostHistory == null){
+            throw new IllegalArgumentException("userPostHistory is null");
+        }
+
+        UserPostHistory existingUserPostHistory = userPostHistories.stream()
+                .filter(userPostHistoryDB->userPostHistoryDB.getRefPostId().equals(userPostHistory.getRefPostId()))
+                .findFirst().orElse(null);
+
+        existingUserPostHistory.setRefPostTitle(userPostHistory.getRefPostTitle());
+        existingUserPostHistory.setRefPostStatus(userPostHistory.getRefPostStatus());
+        existingUserPostHistory.setRefPostShortCutURL(userPostHistory.getRefPostShortCutURL());
+    }
+
+//    public void deletePostHistory(UUID postHistoryId){
+//        UserPostHistory postHistory = userPostHistories.stream()
+//                .filter(userPostHistory -> userPostHistory.getPostHistoryId().equals(postHistoryId))
+//                .findFirst().orElseThrow(() -> new IllegalArgumentException("UserPostHistory not found"));
+//
+//        userPostHistories.remove(postHistory);
+//        postHistory.setUserPostHistoryList(null);
+//    }
+
+    public void deletePostHistoryByPostId(UUID postId){
         UserPostHistory postHistory = userPostHistories.stream()
-                .filter(userPostHistory -> userPostHistory.getPostId().equals(postHistoryId))
+                .filter(userPostHistory -> userPostHistory.getRefPostId().equals(postId))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("UserPostHistory not found"));
 
         userPostHistories.remove(postHistory);

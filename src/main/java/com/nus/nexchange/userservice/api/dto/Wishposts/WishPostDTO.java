@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 public class WishPostDTO {
-    private UUID postId;
+    private UUID wishPostId;
 
     private UUID refPostId;
 

@@ -14,12 +14,13 @@ public class UserWishPost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID postId;
+    private UUID wishPostId;
 
     private UUID refPostId;
 
     private String refPostTitle;
 
+    @Enumerated(EnumType.STRING)
     private PostStatus refPostStatus;
 
     @ManyToOne

@@ -43,8 +43,8 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // 1小时过期
-                .signWith(key, SignatureAlgorithm.HS256)  // 使用密钥和算法
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // 1hour expired
+                .signWith(key, SignatureAlgorithm.HS256)  // secret & algorithm
                 .compact();
     }
 
@@ -61,8 +61,10 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
+
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey.getBytes())
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

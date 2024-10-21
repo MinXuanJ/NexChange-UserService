@@ -25,6 +25,7 @@ public class UserOrderHistory {
 
     private String refOrderAmount;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus refOrderStatus;
 
     @ManyToOne
