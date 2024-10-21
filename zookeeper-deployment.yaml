@@ -17,18 +17,6 @@ spec:
           image: wurstmeister/zookeeper:3.7.0
           ports:
             - containerPort: 2181
-          volumeMounts:
-            - name: data
-              mountPath: /data
-            - name: log
-              mountPath: /datalog
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: zookeeper-pvc
-        - name: log
-          persistentVolumeClaim:
-            claimName: zookeeper-log-pvc
 ---
 apiVersion: v1
 kind: Service
