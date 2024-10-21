@@ -185,7 +185,7 @@ pipeline {
             steps {
                 script {
                     sh "kubectl apply -f kafka-deployment.yaml"
-                    sh "kubectl rollout status statefulset/kafka"
+                    //sh "kubectl rollout status statefulset/kafka"
 
                     def kafkaIP = sh(script: "kubectl get service kafka-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
                     def kafkaPort = sh(script: "kubectl get service kafka-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
@@ -193,6 +193,27 @@ pipeline {
 
                     def kafkaPods = sh(script: "kubectl get pods -l app=kafka -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
                     echo "Kafka pods status: ${kafkaPods}"
+                }
+            }
+        }
+        stage('Verify Kafka') {
+            steps {
+                script {
+                    def maxAttempts = 10
+                    def attempt = 1
+                    while (attempt <= maxAttempts) {
+                        def kafkaStatus = sh(script: "kubectl get pods -l app=kafka -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
+                        if (kafkaStatus.split().every { it == 'Running' }) {
+                            echo "Kafka is ready"
+                            break
+                        }
+                        echo "Waiting for Kafka to be ready (Attempt ${attempt}/${maxAttempts})"
+                        sleep 30
+                        attempt++
+                    }
+                    if (attempt > maxAttempts) {
+                        error "Kafka failed to become ready in time"
+                    }
                 }
             }
         }
