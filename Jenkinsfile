@@ -157,44 +157,26 @@ pipeline {
             }
         }
 
-        stage('Deploy Zookeeper') {
+        stage('Deploy and Verify Zookeeper') {
             steps {
                 script {
-                    sh "kubectl apply -f zookeeper-deployment.yaml" //KUBECONFIG=${KUBECONFIG}
-                    sh "kubectl get pods -l app=zookeeper"
-                    sh "kubectl get svc zookeeper-service"
+                    sh "kubectl apply -f zookeeper-deployment.yaml"
+                    sh "kubectl rollout status deployment/zookeeper"
+                    def zookeeperIP = sh(script: "kubectl get service zookeeper-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
+                    def zookeeperPort = sh(script: "kubectl get service zookeeper-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
+                    echo "Zookeeper is running at ${zookeeperIP}:${zookeeperPort}"
                 }
             }
         }
 
-        stage('Verify Zookeeper YAML') {
+        stage('Deploy and Verify Kafka') {
             steps {
                 script {
-                    sh 'ls -la zookeeper-deployment.yaml'
-                }
-            }
-        }
-
-        stage('Deploy Kafka') {
-            steps {
-                script {
-                    sh 'kubectl apply -f kafka-deployment.yaml'
-                }
-            }
-        }
-
-        stage('Deploy MySQL') {
-            steps {
-                script {
-                    sh 'kubectl apply -f mysql-deployment.yaml'
-                }
-            }
-        }
-
-        stage('Deploy Redis') {
-            steps {
-                script {
-                    sh 'kubectl apply -f redis-deployment.yaml'
+                    sh "kubectl apply -f kafka-deployment.yaml"
+                    sh "kubectl rollout status deployment/kafka"
+                    def kafkaIP = sh(script: "kubectl get service kafka-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
+                    def kafkaPort = sh(script: "kubectl get service kafka-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
+                    echo "Kafka is running at ${kafkaIP}:${kafkaPort}"
                 }
             }
         }
@@ -203,6 +185,25 @@ pipeline {
             steps {
                 script {
                     sh 'kubectl apply -f deployment.yaml'
+                    sh 'kubectl rollout status deployment/nexchange-userservice'
+                }
+            }
+        }
+        stage('Deploy Redis') {
+            steps {
+                script {
+                    sh 'kubectl apply -f redis-deployment.yaml'
+                }
+            }
+        }
+        stage('Deploy and Verify MySQL') {
+            steps {
+                script {
+                    sh "kubectl apply -f mysql-deployment.yaml"
+                    sh "kubectl rollout status deployment/mysql"
+                    def mysqlIP = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
+                    def mysqlPort = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
+                    echo "MySQL is running at ${mysqlIP}:${mysqlPort}"
                 }
             }
         }
