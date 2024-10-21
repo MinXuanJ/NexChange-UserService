@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     environment {
-        MYSQL_PASSWORD = credentials('NEXCHANGE_USERSERVICE_MYSQL_PASSWORD')
-        JWT_SECRET = credentials('NEXCHANGE_USERSERVICE_JWT_SECRET')
-        DOCKER_CREDENTIALS = 'docker_hub_credentials'
+        MYSQL_PASSWORD = credentials('NEXCHANGE_USERSERVICE_MYSQL_PASSWORD') // stored in Jenkins Server
+        JWT_SECRET = credentials('NEXCHANGE_USERSERVICE_JWT_SECRET') // stored in Jenkins Server
+        DOCKER_CREDENTIALS = 'docker_hub_credentials' // stored in Jenkins Server
         DOCKER_IMAGE = "jmx7139/nexchange-userservice"
-        SONAR_PROJECT_KEY = 'MinXuanJ_NexChange-UserService'
-        SONAR_ORGANIZATION_KEY = 'nexchange'
-        SONAR_HOST_URL = 'https://sonarcloud.io'
+        SONAR_ORGANIZATION_KEY = 'nexchange' // Sonar Cloud Organization Key
+        SONAR_PROJECT_KEY = 'MinXuanJ_NexChange-UserService' // Sonar Cloud Project Key
+        SONAR_HOST_URL = 'https://sonarcloud.io' // Sonar Cloud URL
 //        SONAR_LOGIN = '6850d62da33742ee455c430f10fabdda0f4803c2'
-        KUBECONFIG = '/var/lib/jenkins/.kube/config'
+//      KUBECONFIG = '/var/lib/jenkins/.kube/config' // Jenkins Server KubeConfig
     }
 
     parameters {
@@ -147,22 +147,19 @@ pipeline {
                 }
             }
         }
-
-        stage('Verify YAML File') {
+        stage('Apply ConfigMaps and Secrets') {
             steps {
-                script {
-                    sh "ls -la"
-                    sh "cat zookeeper-deployment.yaml" // 确认文件内容
-                }
+                sh 'kubectl apply -f configmap.yaml'
+                sh 'kubectl apply -f secrets.yaml'
             }
         }
 
         stage('Deploy Zookeeper') {
             steps {
                 script {
-                    sh "KUBECONFIG=${KUBECONFIG} kubectl apply -f zookeeper-deployment.yaml"
-                    sh "KUBECONFIG=${KUBECONFIG} kubectl get pods -l app=zookeeper"
-                    sh "KUBECONFIG=${KUBECONFIG} kubectl get svc zookeeper-service"
+                    sh "kubectl apply -f zookeeper-deployment.yaml" //KUBECONFIG=${KUBECONFIG}
+                    sh "kubectl get pods -l app=zookeeper"
+                    sh "kubectl get svc zookeeper-service"
                 }
             }
         }
@@ -203,6 +200,21 @@ pipeline {
             steps {
                 script {
                     sh 'kubectl apply -f deployment.yaml'
+                }
+            }
+        }
+        stage('Verify Deployment') {
+            steps {
+                sh 'kubectl get pods -l app=nexchange-userservice'
+                sh 'kubectl get services nexchange-userservice'
+                sh 'kubectl rollout status deployment/nexchange-userservice'
+            }
+        }
+        stage('Get Service URL') {
+            steps {
+                script {
+                    def serviceURL = sh(script: "kubectl get service nexchange-userservice -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'", returnStdout: true).trim()
+                    echo "Service URL: http://${serviceURL}"
                 }
             }
         }

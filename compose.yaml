@@ -3,8 +3,8 @@ services:
   mysql:
     image: mysql:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: nexchange
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: nexchange-user
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
