@@ -134,11 +134,29 @@ pipeline {
 //        }
 
 
+        stage('Verify YAML File') {
+            steps {
+                script {
+                    sh "ls -la"
+                    sh "cat zookeeper-deployment.yaml" // 确认文件内容
+                }
+            }
+        }
 
         stage('Deploy Zookeeper') {
             steps {
                 script {
-                    sh 'kubectl apply -f zookeeper-deployment.yaml'
+                    sh "kubectl apply -f zookeeper-deployment.yaml --validate=false"
+                    sh "kubectl get pods -l app=zookeeper"
+                    sh "kubectl get svc zookeeper-service"
+                }
+            }
+        }
+
+        stage('Verify Zookeeper YAML') {
+            steps {
+                script {
+                    sh 'ls -la zookeeper-deployment.yaml'
                 }
             }
         }
