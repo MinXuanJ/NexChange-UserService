@@ -161,7 +161,7 @@ pipeline {
             steps {
                 script {
                     sh "kubectl apply -f zookeeper-deployment.yaml"
-                    sh "kubectl rollout status deployment/zookeeper"
+
                     def zookeeperIP = sh(script: "kubectl get service zookeeper-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
                     def zookeeperPort = sh(script: "kubectl get service zookeeper-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
                     echo "Zookeeper is running at ${zookeeperIP}:${zookeeperPort}"
@@ -173,19 +173,21 @@ pipeline {
             steps {
                 script {
                     sh "kubectl apply -f kafka-deployment.yaml"
-                    sh "kubectl rollout status deployment/kafka"
+
                     def kafkaIP = sh(script: "kubectl get service kafka-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
                     def kafkaPort = sh(script: "kubectl get service kafka-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
                     echo "Kafka is running at ${kafkaIP}:${kafkaPort}"
                 }
             }
         }
-
-        stage('Deploy User Service') {
+        stage('Deploy and Verify MySQL') {
             steps {
                 script {
-                    sh 'kubectl apply -f deployment.yaml'
-                    sh 'kubectl rollout status deployment/nexchange-userservice'
+                    sh "kubectl apply -f mysql-deployment.yaml"
+
+                    def mysqlIP = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
+                    def mysqlPort = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
+                    echo "MySQL is running at ${mysqlIP}:${mysqlPort}"
                 }
             }
         }
@@ -196,14 +198,12 @@ pipeline {
                 }
             }
         }
-        stage('Deploy and Verify MySQL') {
+
+        stage('Deploy User Service') {
             steps {
                 script {
-                    sh "kubectl apply -f mysql-deployment.yaml"
-                    sh "kubectl rollout status deployment/mysql"
-                    def mysqlIP = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
-                    def mysqlPort = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
-                    echo "MySQL is running at ${mysqlIP}:${mysqlPort}"
+                    sh 'kubectl apply -f deployment.yaml'
+
                 }
             }
         }
@@ -211,7 +211,7 @@ pipeline {
             steps {
                 sh 'kubectl get pods -l app=nexchange-userservice'
                 sh 'kubectl get services nexchange-userservice'
-                sh 'kubectl rollout status deployment/nexchange-userservice'
+
             }
         }
         stage('Get Service URL') {
