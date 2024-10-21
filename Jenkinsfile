@@ -10,6 +10,7 @@ pipeline {
         SONAR_ORGANIZATION_KEY = 'nexchange'
         SONAR_HOST_URL = 'https://sonarcloud.io'
 //        SONAR_LOGIN = '6850d62da33742ee455c430f10fabdda0f4803c2'
+        KUBECONFIG = '/path/to/kubeconfig'
     }
 
     parameters {
@@ -17,6 +18,11 @@ pipeline {
     }
 
     stages {
+        stage('Checkout'){
+            steps{
+                checkout scm
+            }
+        }
 
         stage('Start Docker Services') {
             steps {
@@ -146,9 +152,9 @@ pipeline {
         stage('Deploy Zookeeper') {
             steps {
                 script {
-                    sh "kubectl apply -f zookeeper-deployment.yaml --validate=false"
-                    sh "kubectl get pods -l app=zookeeper"
-                    sh "kubectl get svc zookeeper-service"
+                    sh "KUBECONFIG=${KUBECONFIG} kubectl apply -f zookeeper-deployment.yaml"
+                    sh "KUBECONFIG=${KUBECONFIG} kubectl get pods -l app=zookeeper"
+                    sh "KUBECONFIG=${KUBECONFIG} kubectl get svc zookeeper-service"
                 }
             }
         }
