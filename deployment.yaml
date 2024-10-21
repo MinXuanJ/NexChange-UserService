@@ -5,19 +5,38 @@ metadata:
   labels:
     app: nexchange-userservice
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: nexchange-userservice
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
   template:
     metadata:
       labels:
         app: nexchange-userservice
     spec:
       initContainers:
-        - name: wait-for-kafka
+        - name: wait-for-services
           image: busybox
-          command: ['sh', '-c', 'until nc -z kafka 9092; do echo waiting for kafka; sleep 2; done;']
+          command: ['sh', '-c', '
+            while ! nc -z $ZOOKEEPER_SERVICE 2181; do echo waiting for zookeeper; sleep 2; done;
+            while ! nc -z $KAFKA_SERVICE 9092; do echo waiting for kafka; sleep 2; done;
+            while ! nc -z $MYSQL_SERVICE 3306; do echo waiting for mysql; sleep 2; done;
+            while ! nc -z $REDIS_SERVICE 6379; do echo waiting for redis; sleep 2; done;
+          ']
+          env:
+            - name: ZOOKEEPER_SERVICE
+              value: "zookeeper-service"
+            - name: KAFKA_SERVICE
+              value: "kafka-service"
+            - name: MYSQL_SERVICE
+              value: "mysql-user-service"
+            - name: REDIS_SERVICE
+              value: "redis-service"
       containers:
         - name: nexchange-userservice
           image: jmx7139/nexchange-userservice:latest
@@ -49,5 +68,24 @@ spec:
                 secretKeyRef:
                   name: mysql-secret
                   key: jwt-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 60
+            periodSeconds: 15
       imagePullSecrets:
         - name: docker-hub-secret

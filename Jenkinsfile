@@ -145,15 +145,23 @@ pipeline {
         stage('Verify Kubernetes Access') {
             steps {
                 script {
-                    sh "kubectl config view"  // 查看 kubeconfig 配置
-                    sh "kubectl auth can-i get pods"  // 验证权限
+                    sh "kubectl config view"
+                    def canGetPods = sh(script: "kubectl auth can-i get pods", returnStatus: true) == 0
+                    if (!canGetPods) {
+                        error "Jenkins lacks necessary permissions to manage Kubernetes resources"
+                    }
+                    echo "Kubernetes access verified successfully"
                 }
             }
         }
+
         stage('Apply ConfigMaps and Secrets') {
             steps {
-                sh 'kubectl apply -f configmap.yaml'
-                sh 'kubectl apply -f secrets.yaml'
+                script {
+                    sh 'kubectl apply -f configmap.yaml'
+                    sh 'kubectl apply -f secrets.yaml'
+                    echo "ConfigMaps and Secrets applied successfully"
+                }
             }
         }
 
@@ -161,10 +169,14 @@ pipeline {
             steps {
                 script {
                     sh "kubectl apply -f zookeeper-deployment.yaml"
+                    sh "kubectl rollout status deployment/zookeeper"
 
                     def zookeeperIP = sh(script: "kubectl get service zookeeper-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
                     def zookeeperPort = sh(script: "kubectl get service zookeeper-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
                     echo "Zookeeper is running at ${zookeeperIP}:${zookeeperPort}"
+
+                    def zookeeperPods = sh(script: "kubectl get pods -l app=zookeeper -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
+                    echo "Zookeeper pods status: ${zookeeperPods}"
                 }
             }
         }
@@ -173,28 +185,46 @@ pipeline {
             steps {
                 script {
                     sh "kubectl apply -f kafka-deployment.yaml"
+                    sh "kubectl rollout status statefulset/kafka"
 
                     def kafkaIP = sh(script: "kubectl get service kafka-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
                     def kafkaPort = sh(script: "kubectl get service kafka-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
                     echo "Kafka is running at ${kafkaIP}:${kafkaPort}"
+
+                    def kafkaPods = sh(script: "kubectl get pods -l app=kafka -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
+                    echo "Kafka pods status: ${kafkaPods}"
                 }
             }
         }
+
         stage('Deploy and Verify MySQL') {
             steps {
                 script {
                     sh "kubectl apply -f mysql-deployment.yaml"
+                    sh "kubectl rollout status deployment/mysql"
 
                     def mysqlIP = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
                     def mysqlPort = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
                     echo "MySQL is running at ${mysqlIP}:${mysqlPort}"
+
+                    def mysqlPods = sh(script: "kubectl get pods -l app=mysql -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
+                    echo "MySQL pods status: ${mysqlPods}"
                 }
             }
         }
-        stage('Deploy Redis') {
+
+        stage('Deploy and Verify Redis') {
             steps {
                 script {
                     sh 'kubectl apply -f redis-deployment.yaml'
+                    sh "kubectl rollout status deployment/redis"
+
+                    def redisIP = sh(script: "kubectl get service redis-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
+                    def redisPort = sh(script: "kubectl get service redis-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
+                    echo "Redis is running at ${redisIP}:${redisPort}"
+
+                    def redisPods = sh(script: "kubectl get pods -l app=redis -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
+                    echo "Redis pods status: ${redisPods}"
                 }
             }
         }
@@ -203,22 +233,47 @@ pipeline {
             steps {
                 script {
                     sh 'kubectl apply -f deployment.yaml'
-
+                    sh "kubectl rollout status deployment/nexchange-userservice"
+                    echo "User Service deployed successfully"
                 }
             }
         }
-        stage('Verify Deployment') {
-            steps {
-                sh 'kubectl get pods -l app=nexchange-userservice'
-                sh 'kubectl get services nexchange-userservice'
 
+        stage('Verify User Service Deployment') {
+            steps {
+                script {
+                    def userServicePods = sh(script: "kubectl get pods -l app=nexchange-userservice -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
+                    echo "User Service pods status: ${userServicePods}"
+
+                    def userServiceDetails = sh(script: "kubectl describe deployment nexchange-userservice", returnStdout: true).trim()
+                    echo "User Service Deployment Details:\n${userServiceDetails}"
+
+                    def userServiceLogs = sh(script: "kubectl logs -l app=nexchange-userservice --tail=50", returnStdout: true).trim()
+                    echo "User Service Logs (last 50 lines):\n${userServiceLogs}"
+                }
             }
         }
+
         stage('Get Service URL') {
             steps {
                 script {
                     def serviceURL = sh(script: "kubectl get service nexchange-userservice -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'", returnStdout: true).trim()
                     echo "Service URL: http://${serviceURL}"
+
+                    def serviceDetails = sh(script: "kubectl get service nexchange-userservice -o yaml", returnStdout: true).trim()
+                    echo "Service Details:\n${serviceDetails}"
+                }
+            }
+        }
+
+        stage('Final Health Check') {
+            steps {
+                script {
+                    def allPods = sh(script: "kubectl get pods --all-namespaces", returnStdout: true).trim()
+                    echo "All pods across all namespaces:\n${allPods}"
+
+                    def allServices = sh(script: "kubectl get services --all-namespaces", returnStdout: true).trim()
+                    echo "All services across all namespaces:\n${allServices}"
                 }
             }
         }
