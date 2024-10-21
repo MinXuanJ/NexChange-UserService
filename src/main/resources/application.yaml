@@ -4,7 +4,7 @@ spring:
 #    import: "file:./src/main/resources/secret.properties"
     import: "optional:classpath:secret.properties"
   datasource:
-    url: jdbc:mysql://${DB_HOST:mysql}:3306/${DB_NAME:NexChangeUserDB}
+    url: jdbc:mysql://${DB_HOST:mysql-user-service}:3306/${DB_NAME:NexChangeUserDB}
     username: ${DB_USER:root}
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,8 +16,20 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST:redis-service}
       port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka-service:9092}  # Kafka bootstrap servers，
+    consumer:
+      group-id: user-system
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring.json.trusted.packages: "com.nus.nexchange.*"  # Kafka 消费者信任的包
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 jwt:
   secret: ${JWT_SECRET}
 server:

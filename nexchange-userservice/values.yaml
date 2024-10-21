@@ -1,0 +1,22 @@
+# values.yaml
+
+replicas: 3
+
+image:
+  repository: jmx7139/nexchange-userservice
+  tag: latest
+
+mysql:
+  host: mysql-user-service
+  port: 3306
+  username: user
+  password: dXNlcg== # 'user' encoded
+  rootPassword: YWRtaW4= # 'admin' encoded
+
+redis:
+  host: redis-service
+  port: 6379
+
+kafka:
+  host: kafka
+  port: 9092
