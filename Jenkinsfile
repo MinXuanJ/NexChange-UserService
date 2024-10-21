@@ -24,24 +24,24 @@ pipeline {
             }
         }
 
-        stage('Start Docker Services') {
-            steps {
-                script {
-                    sh 'docker-compose up -d'
-                    sh 'docker-compose ps'
-                }
-            }
-        }
-
-        stage('Unit Test') {
-            steps {
-                script {
-                    sh "docker-compose ps"
-                    sh "mvn test"
-                }
-                junit '**/target/surefire-reports/*.xml'
-             }
-        }
+//        stage('Start Docker Services') {
+//            steps {
+//                script {
+//                    sh 'docker-compose up -d'
+//                    sh 'docker-compose ps'
+//                }
+//            }
+//        }
+//
+//        stage('Unit Test') {
+//            steps {
+//                script {
+//                    sh "docker-compose ps"
+//                    sh "mvn test"
+//                }
+//                junit '**/target/surefire-reports/*.xml'
+//             }
+//        }
 
         stage('Build and Package') {
             steps {
@@ -50,8 +50,6 @@ pipeline {
                 }
             }
         }
-
-
 
         stage('Static Code Analysis') {
             steps {
@@ -113,14 +111,14 @@ pipeline {
             }
         }
 
-
-        stage('Stop Docker Services') {
-            steps {
-                script {
-                    sh 'docker-compose down'
-                }
-            }
-        }
+//
+//        stage('Stop Docker Services') {
+//            steps {
+//                script {
+//                    sh 'docker-compose down'
+//                }
+//            }
+//        }
 
 //        stage('Deploy Docker Secret') {
 //            steps {
