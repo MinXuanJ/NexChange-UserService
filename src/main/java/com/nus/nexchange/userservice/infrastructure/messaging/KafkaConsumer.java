@@ -49,9 +49,11 @@ public class KafkaConsumer {
                     .filter(ContactDTO::isDefaultContact)
                     .findFirst().orElse(null);
             OrderContactDTO orderContactDTO = modelMapper.map(contactDTO, OrderContactDTO.class);
-            orderContactDTO.setOrderId(UUIDOrderDTO.getOrderId());
             orderContactDTO.setUserId(UUIDOrderDTO.getUserId());
             String orderContactDTOJson = new ObjectMapper().writeValueAsString(orderContactDTO);
+
+//            orderContactDTO.setOrderId(UUIDOrderDTO.getOrderId());
+            orderContactDTO.setSecret(UUIDOrderDTO.getSecret());
 
             kafkaProducer.sendMessage("OrderBuyer", orderContactDTOJson);
         } catch (Exception e) {
@@ -73,6 +75,7 @@ public class KafkaConsumer {
     }
 
     @KafkaListener(topics = "CancelOrder")
+    @Transactional
     public void orderCancelListen(String orderDTOJson) {
         try {
             UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);

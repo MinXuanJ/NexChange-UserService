@@ -19,4 +19,6 @@ public class OrderContactDTO {
     private UUID orderId;
 
     private UUID userId;
+
+    private UUID secret;
 }
