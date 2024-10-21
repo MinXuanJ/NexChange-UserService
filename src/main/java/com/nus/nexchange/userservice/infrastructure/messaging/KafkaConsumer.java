@@ -1,12 +1,20 @@
 package com.nus.nexchange.userservice.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nus.nexchange.userservice.api.dto.Contacts.ContactDTO;
+import com.nus.nexchange.userservice.api.dto.Contacts.ContactListDTO;
 import com.nus.nexchange.userservice.api.dto.OrderHistories.OrderHistoryDTO;
 import com.nus.nexchange.userservice.api.dto.PostHistories.PostHistoryDTO;
 import com.nus.nexchange.userservice.application.command.OrderHistoryListCommand;
 import com.nus.nexchange.userservice.application.command.PostHistoryListCommand;
+import com.nus.nexchange.userservice.application.query.ContactListQuery;
+import com.nus.nexchange.userservice.domain.entity.OrderStatus;
+import com.nus.nexchange.userservice.infrastructure.messaging.dto.UUIDOrderDTO;
+import com.nus.nexchange.userservice.infrastructure.messaging.dto.OrderContactDTO;
+import com.nus.nexchange.userservice.infrastructure.messaging.dto.OrderDTO;
 import com.nus.nexchange.userservice.infrastructure.messaging.dto.PostDTO;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -21,20 +29,55 @@ public class KafkaConsumer {
     @Autowired
     private PostHistoryListCommand postHistoryListCommand;
 
-    @KafkaListener(topics = "newOrder")
-    public void orderCreateListen(Object orderHistory) {
+    @Autowired
+    private ContactListQuery contactListQuery;
+
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @KafkaListener(topics = "CreateOrder")
+    @Transactional
+    public void orderCreateListen(String createOrderDTOJson) {
         try {
-            orderHistoryListCommand.addOrderHistory((OrderHistoryDTO) orderHistory);
-        } catch (IllegalArgumentException e) {
+            UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(createOrderDTOJson, UUIDOrderDTO.class);
+            ContactListDTO contactListDTO = contactListQuery.getContactListByUserId(UUIDOrderDTO.getUserId());
+
+            ContactDTO contactDTO = contactListDTO.getUserContacts().stream()
+                    .filter(ContactDTO::isDefaultContact)
+                    .findFirst().orElse(null);
+            OrderContactDTO orderContactDTO = modelMapper.map(contactDTO, OrderContactDTO.class);
+            orderContactDTO.setOrderId(UUIDOrderDTO.getOrderId());
+            orderContactDTO.setUserId(UUIDOrderDTO.getUserId());
+            String orderContactDTOJson = new ObjectMapper().writeValueAsString(orderContactDTO);
+
+            kafkaProducer.sendMessage("OrderBuyer", orderContactDTOJson);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @KafkaListener(topics = "updateOrder")
-    public void orderUpdateListen(Object orderhistory) {
+    @KafkaListener(topics = "CreatedOrder")
+    @Transactional
+    public void orderCreatedListen(String orderDTOJson) {
         try {
-            orderHistoryListCommand.updateOrderHistory((OrderHistoryDTO) orderhistory);
-        } catch (IllegalArgumentException e) {
+            OrderDTO orderDTO = new ObjectMapper().readValue(orderDTOJson, OrderDTO.class);
+            OrderHistoryDTO orderHistoryDTO = convertToOrderHistoryDTO(orderDTO);
+
+            orderHistoryListCommand.addOrderHistory(orderHistoryDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @KafkaListener(topics = "CancelOrder")
+    public void orderCancelListen(String orderDTOJson) {
+        try {
+            UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
+            orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.CANCELED);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -63,15 +106,15 @@ public class KafkaConsumer {
         }
     }
 
-    @KafkaListener(topics="deletePost")
+    @KafkaListener(topics = "deletePost")
     @Transactional
     public void deletePostListen(String postDTOJson) {
-        try{
+        try {
             PostDTO postDTO = new ObjectMapper().readValue(postDTOJson, PostDTO.class);
             UUID userId = postDTO.getUserId();
             UUID postId = postDTO.getPostId();
-            postHistoryListCommand.removePostHistory(postId,userId);
-        }catch(Exception e){
+            postHistoryListCommand.removePostHistory(postId, userId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -89,5 +132,18 @@ public class KafkaConsumer {
         postHistoryDTO.setRefPostStatus(postDTO.getPostStatus());
 
         return postHistoryDTO;
+    }
+
+    private OrderHistoryDTO convertToOrderHistoryDTO(OrderDTO orderDTO) {
+        OrderHistoryDTO orderHistoryDTO = new OrderHistoryDTO();
+
+        orderHistoryDTO.setUserId(orderDTO.getUserId());
+        orderHistoryDTO.setRefOrderId(orderDTO.getOrderId());
+        orderHistoryDTO.setRefOrderTitle(orderDTO.getRefPostTitle());
+        orderHistoryDTO.setRefOrderShoutCutURL(orderDTO.getRefPostShortcutURL());
+        orderHistoryDTO.setRefOrderPrice(orderDTO.getRefPostPrice());
+        orderHistoryDTO.setRefOrderStatus(orderDTO.getOrderStatus());
+
+        return orderHistoryDTO;
     }
 }
