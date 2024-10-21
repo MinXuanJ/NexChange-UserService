@@ -10,7 +10,7 @@ pipeline {
         SONAR_ORGANIZATION_KEY = 'nexchange'
         SONAR_HOST_URL = 'https://sonarcloud.io'
 //        SONAR_LOGIN = '6850d62da33742ee455c430f10fabdda0f4803c2'
-        KUBECONFIG = '/home/ubuntu/.kube/config'
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'
     }
 
     parameters {
@@ -139,6 +139,14 @@ pipeline {
 //            }
 //        }
 
+        stage('Verify Kubernetes Access') {
+            steps {
+                script {
+                    sh "kubectl config view"  // 查看 kubeconfig 配置
+                    sh "kubectl auth can-i get pods"  // 验证权限
+                }
+            }
+        }
 
         stage('Verify YAML File') {
             steps {
