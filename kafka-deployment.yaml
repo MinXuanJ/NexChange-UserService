@@ -4,7 +4,7 @@ metadata:
   name: kafka
 spec:
   serviceName: kafka-headless
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: kafka
@@ -20,10 +20,12 @@ spec:
             - containerPort: 9092
               name: kafka
           env:
-            - name: KAFKA_BROKER_ID
+            - name: POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: KAFKA_BROKER_ID
+              value: "$(expr $(echo $(POD_NAME) | awk -F'-' '{print $$NF}'))"
             - name: KAFKA_ZOOKEEPER_CONNECT
               value: "zookeeper-service:2181"
             - name: KAFKA_LISTENERS
