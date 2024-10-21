@@ -28,8 +28,19 @@ pipeline {
             steps {
                 script {
                     sh 'docker-compose up -d'
+                    sh 'docker-compose ps'
                 }
             }
+        }
+
+        stage('Unit Test') {
+            steps {
+                script {
+                    sh "docker-compose ps"
+                    sh "mvn test"
+                }
+                junit '**/target/surefire-reports/*.xml'
+             }
         }
 
         stage('Build and Package') {
@@ -40,14 +51,7 @@ pipeline {
             }
         }
 
-//        stage('Unit Test') {
-//            steps {
-//                script {
-//                    sh "mvn test"
-//                }
-//                junit '**/target/surefire-reports/*.xml'
-//             }
-//        }
+
 
         stage('Static Code Analysis') {
             steps {
@@ -100,7 +104,7 @@ pipeline {
         stage('Cleanup Docker Images') {
             steps {
                 script {
-                    // Corrected command to keep only the last 2 images
+                    // 删除超过2个的镜像，保留最新的
                     sh '''
                 docker images --format "{{.ID}} {{.Repository}} {{.Tag}} {{.CreatedAt}}" | grep $DOCKER_IMAGE | sort -r | awk 'NR>2 {print $1}' | xargs -r docker rmi
             '''
@@ -108,6 +112,7 @@ pipeline {
                 }
             }
         }
+
 
         stage('Stop Docker Services') {
             steps {
