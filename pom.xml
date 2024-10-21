@@ -155,7 +155,7 @@
     </dependencyManagement>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>NexChange-UserService</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

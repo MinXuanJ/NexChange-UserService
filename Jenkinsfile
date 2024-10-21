@@ -24,15 +24,15 @@ pipeline {
             }
         }
 
-//        stage('Start Docker Services') {
-//            steps {
-//                script {
-//                    sh 'docker-compose up -d'
-//                    sh 'docker-compose ps'
-//                }
-//            }
-//        }
-//
+        stage('Start Docker Services') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
+                    sh 'docker-compose ps'
+                }
+            }
+        }
+
 //        stage('Unit Test') {
 //            steps {
 //                script {
@@ -111,14 +111,14 @@ pipeline {
             }
         }
 
-//
-//        stage('Stop Docker Services') {
-//            steps {
-//                script {
-//                    sh 'docker-compose down'
-//                }
-//            }
-//        }
+
+        stage('Stop Docker Services') {
+            steps {
+                script {
+                    sh 'docker-compose down'
+                }
+            }
+        }
 
 //        stage('Deploy Docker Secret') {
 //            steps {
