@@ -39,6 +39,7 @@ kind: Service
 metadata:
   name: mysql-user-service
 spec:
+  type: ClusterIP
   selector:
     app: mysql
   ports:
