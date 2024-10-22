@@ -328,6 +328,7 @@ pipeline {
         stage('Test Service Connections') {
             steps {
                 script {
+                    // 获取用户服务的 Pod 名称
                     def userServicePod = sh(
                             script: "kubectl get pod -l app=nexchange-userservice -o jsonpath='{.items[0].metadata.name}'",
                             returnStdout: true
@@ -337,51 +338,33 @@ pipeline {
 
                     // 测试 MySQL 连接
                     sh """
-               echo "Testing MySQL Connection with curl:"
-               kubectl exec ${userServicePod} -- curl mysql-user-service:3306 || true
-               
-               echo "\nTesting MySQL Authentication:"
-               kubectl exec \$(kubectl get pod -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
-               mysql -uroot -padmin -e 'SELECT 1' || true
-           """
+                    echo "Testing MySQL Connection with curl:"
+                    kubectl exec ${userServicePod} -- curl mysql-user-service:3306 || true
+                    
+                    echo "\nTesting MySQL Authentication:"
+                    kubectl exec \$(kubectl get pod -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
+                    mysql -uroot -padmin -e 'SELECT 1' || true
+                    """
 
                     // 测试 Redis 连接
                     sh """
-               echo "\nTesting Redis Connection with curl:"
-               kubectl exec ${userServicePod} -- curl redis-service:6379 || true
-               
-               echo "\nTesting Redis Functionality:"
-               kubectl exec \$(kubectl get pod -l app=redis -o jsonpath='{.items[0].metadata.name}') -- \
-               redis-cli ping || true
-           """
+                    echo "\nTesting Redis Connection with curl:"
+                    kubectl exec ${userServicePod} -- curl redis-service:6379 || true
+                    
+                    echo "\nTesting Redis Functionality:"
+                    kubectl exec \$(kubectl get pod -l app=redis -o jsonpath='{.items[0].metadata.name}') -- \
+                    redis-cli ping || true
+                    """
 
                     // 测试 Kafka 连接
                     sh """
-               echo "\nTesting Kafka Connection with curl:"
-               kubectl exec ${userServicePod} -- curl kafka-service:9092 || true
-               
-               echo "\nTesting Kafka Topics:"
-               kubectl exec \$(kubectl get pod -l app=kafka -o jsonpath='{.items[0].metadata.name}') -- \
-               kafka-topics.sh --bootstrap-server localhost:9092 --list || true
-           """
-
-                    // 检查应用健康状态
-                    sh """
-               echo "\nChecking Application Health:"
-               kubectl exec ${userServicePod} -- curl -s http://localhost:8081/actuator/health || true
-           """
-
-                    // 检查 Kafka, MySQL, Redis 连接状态
-                    sh """
-               echo "\nChecking Kafka Connection Info:"
-               kubectl logs ${userServicePod} | grep -i "Kafka connection successful"
-               
-               echo "\nChecking MySQL Connection Info:"
-               kubectl logs ${userServicePod} | grep -i "Connected to MySQL"
-               
-               echo "\nChecking Redis Connection Info:"
-               kubectl logs ${userServicePod} | grep -i "Connected to Redis"
-            """
+                    echo "\nTesting Kafka Connection with curl:"
+                    kubectl exec ${userServicePod} -- curl kafka-service:9092 || true
+                    
+                    echo "\nTesting Kafka Topics:"
+                    kubectl exec \$(kubectl get pod -l app=kafka -o jsonpath='{.items[0].metadata.name}') -- \
+                    kafka-topics.sh --bootstrap-server localhost:9092 --list || true
+                    """
                 }
             }
         }
