@@ -85,6 +85,17 @@ public class KafkaConsumer {
         }
     }
 
+    @KafkaListener(topics = "ExpireOrder")
+    @Transactional
+    public void orderExpireListen(String orderDTOJson) {
+        try {
+            UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
+            orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.EXPIRED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @KafkaListener(topics = "newPost")
     @Transactional
     public void postPublishListen(String postDTOJson) {
