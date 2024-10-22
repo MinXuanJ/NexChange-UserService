@@ -168,55 +168,23 @@ pipeline {
         stage('Deploy and Verify Zookeeper') {
             steps {
                 script {
-
                     sh "kubectl apply -f zookeeper-deployment.yaml"
-                    sh "kubectl rollout status deployment/zookeeper"
+                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=60s"
 
-                    // 验证 Zookeeper 是否完全就绪
-                    def maxAttempts = 10
-                    def attempt = 1
-                    def zookeeperReady = false
+                    def zookeeperPod = sh(
+                            script: "kubectl get pod -l app=zookeeper -o jsonpath='{.items[0].metadata.name}'",
+                            returnStdout: true
+                    ).trim()
 
-                    while (attempt <= maxAttempts) {
-                        try {
-                            // 检查 Pod 运行状态
-                            def podStatus = sh(script: """
-                        kubectl get pods -l app=zookeeper -o jsonpath='{.items[*].status.phase}'
-                    """, returnStdout: true).trim()
+                    // 验证 Zookeeper 状态
+                    def zkHealth = sh(
+                            script: "kubectl exec ${zookeeperPod} -- bash -c 'echo ruok | nc localhost 2181'",
+                            returnStdout: true
+                    ).trim()
 
-                            // 检查 ReadinessProbe 状态
-                            def readyStatus = sh(script: """
-                        kubectl get pods -l app=zookeeper -o jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}'
-                    """, returnStdout: true).trim()
-
-                            if (podStatus == "Running" && readyStatus == "True") {
-                                // 获取服务信息
-                                def zookeeperIP = sh(script: "kubectl get service zookeeper-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
-                                def zookeeperPort = "2181" // 固定端口
-
-                                // 验证连接性
-                                def zkTest = sh(script: """
-                            kubectl run zk-test --image=busybox --restart=Never --rm -i --timeout=10s -- \
-                            nc -z -v ${zookeeperIP} ${zookeeperPort}
-                        """, returnStatus: true)
-
-                                if (zkTest == 0) {
-                                    echo "Zookeeper is fully operational at ${zookeeperIP}:${zookeeperPort}"
-                                    zookeeperReady = true
-                                    break
-                                }
-                            }
-                        } catch (Exception e) {
-                            echo "Attempt ${attempt}: Zookeeper verification failed: ${e.getMessage()}"
-                        }
-
-                        sleep 20
-                        attempt++
-                    }
-
-                    if (!zookeeperReady) {
-                        error "Zookeeper failed to become ready after ${maxAttempts} attempts"
-                    }
+                    echo "Zookeeper health check response: ${zkHealth}"
+                    echo "Zookeeper logs:"
+                    sh "kubectl logs ${zookeeperPod} --tail=20"
                 }
             }
         }
@@ -224,55 +192,23 @@ pipeline {
         stage('Deploy and Verify Kafka') {
             steps {
                 script {
-                    // 部署 Kafka
-                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper"
                     sh "kubectl apply -f kafka-deployment.yaml"
-                    sh "kubectl rollout status deployment/kafka"
+                    sh "kubectl wait --for=condition=ready pod -l app=kafka --timeout=120s"
 
-                    def maxAttempts = 10
-                    def attempt = 1
-                    def kafkaReady = false
+                    def kafkaPod = sh(
+                            script: "kubectl get pod -l app=kafka -o jsonpath='{.items[0].metadata.name}'",
+                            returnStdout: true
+                    ).trim()
 
-                    while (attempt <= maxAttempts) {
-                        try {
-                            // 检查 Pod 状态
-                            def podStatus = sh(script: """
-                        kubectl get pods -l app=kafka -o jsonpath='{.items[*].status.phase}'
-                    """, returnStdout: true).trim()
+                    // 验证 Kafka 状态
+                    echo "Kafka logs:"
+                    sh "kubectl logs ${kafkaPod} --tail=20"
 
-                            // 检查 ReadinessProbe 状态
-                            def readyStatus = sh(script: """
-                        kubectl get pods -l app=kafka -o jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}'
-                    """, returnStdout: true).trim()
-
-                            if (podStatus == "Running" && readyStatus == "True") {
-                                // 获取 Kafka 服务信息
-                                def kafkaIP = sh(script: "kubectl get service kafka-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
-                                def kafkaPort = "9092" // 固定端口
-
-                                // 验证 Kafka 连接性
-                                def kafkaTest = sh(script: """
-                            kubectl run kafka-test --image=wurstmeister/kafka:2.13-2.8.1 --restart=Never --rm -i --timeout=20s -- \
-                            bash -c 'echo dump | nc ${kafkaIP} ${kafkaPort}'
-                        """, returnStatus: true)
-
-                                if (kafkaTest == 0) {
-                                    echo "Kafka is fully operational at ${kafkaIP}:${kafkaPort}"
-                                    kafkaReady = true
-                                    break
-                                }
-                            }
-                        } catch (Exception e) {
-                            echo "Attempt ${attempt}: Kafka verification failed: ${e.getMessage()}"
-                        }
-
-                        sleep 30
-                        attempt++
-                    }
-
-                    if (!kafkaReady) {
-                        error "Kafka failed to become ready after ${maxAttempts} attempts"
-                    }
+                    // 测试 Kafka 功能
+                    sh """
+                kubectl exec ${kafkaPod} -- bash -c \
+                'kafka-topics.sh --list --bootstrap-server localhost:9092'
+            """
                 }
             }
         }
