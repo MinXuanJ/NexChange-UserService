@@ -244,7 +244,39 @@ pipeline {
 //                }
 //            }
 //        }
+        stage('Deploy and Verify Database Services') {
+            steps {
+                script {
+                    // 部署 MySQL
+                    sh "kubectl apply -f mysql-deployment.yaml"
+                    sh "kubectl wait --for=condition=ready pod -l app=mysql --timeout=120s"
 
+                    // 部署 Redis
+                    sh "kubectl apply -f redis-deployment.yaml"
+                    sh "kubectl wait --for=condition=ready pod -l app=redis --timeout=60s"
+
+                    // 输出服务信息
+                    def mysqlInfo = sh(
+                            script: """
+                    echo "MySQL Service: \$(kubectl get service mysql-user-service -o jsonpath='{.spec.clusterIP}:{.spec.ports[0].port}')"
+                    echo "MySQL Database: \$(kubectl get cm userservice-config -o jsonpath='{.data.DB_NAME}')"
+                    echo "MySQL Pods Status: \$(kubectl get pods -l app=mysql -o jsonpath='{.items[*].status.phase}')"
+                """,
+                            returnStdout: true
+                    ).trim()
+
+                    def redisInfo = sh(
+                            script: """
+                    echo "Redis Service: \$(kubectl get service redis-service -o jsonpath='{.spec.clusterIP}:{.spec.ports[0].port}')"
+                    echo "Redis Pods Status: \$(kubectl get pods -l app=redis -o jsonpath='{.items[*].status.phase}')"
+                """,
+                            returnStdout: true
+                    ).trim()
+
+                    echo "Database Services Status:\n${mysqlInfo}\n${redisInfo}"
+                }
+            }
+        }
 //        stage('Deploy User Service') {
 //            steps {
 //                script {
