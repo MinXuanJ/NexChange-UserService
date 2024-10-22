@@ -213,37 +213,6 @@ pipeline {
             }
         }
 
-//        stage('Deploy and Verify MySQL') {
-//            steps {
-//                script {
-//                    sh "kubectl apply -f mysql-deployment.yaml"
-//                    sh "kubectl rollout status deployment/mysql"
-//
-//                    def mysqlIP = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
-//                    def mysqlPort = sh(script: "kubectl get service mysql-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
-//                    echo "MySQL is running at ${mysqlIP}:${mysqlPort}"
-//
-//                    def mysqlPods = sh(script: "kubectl get pods -l app=mysql -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
-//                    echo "MySQL pods status: ${mysqlPods}"
-//                }
-//            }
-//        }
-//
-//        stage('Deploy and Verify Redis') {
-//            steps {
-//                script {
-//                    sh 'kubectl apply -f redis-deployment.yaml'
-//                    sh "kubectl rollout status deployment/redis"
-//
-//                    def redisIP = sh(script: "kubectl get service redis-service -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
-//                    def redisPort = sh(script: "kubectl get service redis-service -o jsonpath='{.spec.ports[0].port}'", returnStdout: true).trim()
-//                    echo "Redis is running at ${redisIP}:${redisPort}"
-//
-//                    def redisPods = sh(script: "kubectl get pods -l app=redis -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
-//                    echo "Redis pods status: ${redisPods}"
-//                }
-//            }
-//        }
         stage('Deploy and Verify Database Services') {
             steps {
                 script {
@@ -333,9 +302,29 @@ pipeline {
                 kubectl logs ${podName} | grep -i "started"
             """
 
+
+                    echo "Application Logs:"
+                    sh """
+                echo "Recent Logs:"
+                kubectl logs ${podName} --tail=50
+                
+                echo "\nApplication Status:"
+                kubectl exec ${podName} -- curl -s http://localhost:8081/actuator/health || true
+            """
+
+                    // 7. 如果是 LoadBalancer，输出访问信息
+                    echo "Access Information:"
+                    sh """
+                if kubectl get service nexchange-userservice -o jsonpath='{.spec.type}' | grep -q 'LoadBalancer'; then
+                    echo "LoadBalancer URL:"
+                    kubectl get service nexchange-userservice -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+                fi
+            """
+
                 }
             }
         }
+
         stage('Test Service Connections') {
             steps {
                 script {
