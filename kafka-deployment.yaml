@@ -4,7 +4,7 @@ metadata:
   name: kafka
 spec:
   serviceName: kafka-headless
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: kafka
@@ -13,27 +13,24 @@ spec:
       labels:
         app: kafka
     spec:
-      initContainers:
-        - name: wait-for-zookeeper
-          image: busybox
-          command: ['sh', '-c', 'until nc -z zookeeper-service.default.svc.cluster.local 2181; do echo waiting for zookeeper; sleep 2; done;']
       containers:
         - name: kafka
           image: wurstmeister/kafka:latest
           ports:
             - containerPort: 9092
-              name: kafka
           env:
+            # 动态分配 KAFKA_BROKER_ID
             - name: KAFKA_BROKER_ID
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.name
-            - name: KAFKA_BROKER_ID_COMMAND
-              value: "echo ${KAFKA_BROKER_ID} | awk -F'-' '{print $NF}'"
+                  fieldPath: metadata.name  # StatefulSet的Pod name包含index，可以作为broker id
+            # Zookeeper 服务地址
             - name: KAFKA_ZOOKEEPER_CONNECT
-              value: "zookeeper-service.default.svc.cluster.local:2181"
+              value: "zookeeper-service:2181"
+            # 配置 Kafka 的监听地址
             - name: KAFKA_LISTENERS
-              value: "PLAINTEXT://0.0.0.0:9092"
+              value: "PLAINTEXT://:9092"
+            # 配置 Kafka 的广告地址，确保每个 Kafka 实例可以通过集群 DNS 被其他组件访问
             - name: KAFKA_ADVERTISED_LISTENERS
               value: "PLAINTEXT://$(POD_NAME).kafka-headless.$(POD_NAMESPACE).svc.cluster.local:9092"
             - name: POD_NAME
@@ -44,18 +41,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS
-              value: "60000"
-            - name: KAFKA_LOG4J_OPTS
-              value: "-Dlog4j.configuration=file:/opt/kafka/config/log4j.properties -Dkafka.logs.dir=/opt/kafka/logs"
-          command:
-            - sh
-            - -c
-            - |
-              export KAFKA_BROKER_ID=$(eval $KAFKA_BROKER_ID_COMMAND)
-              echo "KAFKA_BROKER_ID=$KAFKA_BROKER_ID"
-              echo "KAFKA_ZOOKEEPER_CONNECT=$KAFKA_ZOOKEEPER_CONNECT"
-              /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
 
 ---
 apiVersion: v1
@@ -63,7 +48,7 @@ kind: Service
 metadata:
   name: kafka-headless
 spec:
-  clusterIP: None
+  clusterIP: None  # 无需单个 IP，允许 Pod 通过域名进行通信
   selector:
     app: kafka
   ports:
