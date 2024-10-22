@@ -264,7 +264,7 @@ pipeline {
         stage('Deploy User Service') {
             steps {
                 script {
-                    // 1. 首先验证依赖服务是否就绪
+                    // 1. Verifying dependencies
                     sh """
                 echo "Verifying dependencies..."
                 kubectl wait --for=condition=ready pod -l app=mysql --timeout=60s
@@ -273,20 +273,20 @@ pipeline {
                 kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=60s
             """
 
-                    // 2. 部署 User Service
+                    // 2. Deploy User Service
                     sh 'kubectl apply -f deployment.yaml'
                     sh "kubectl rollout status deployment/nexchange-userservice"
 
-                    // 3. 等待 Pod 就绪
+                    // 3. Wait Pod Readiness
                     sh "kubectl wait --for=condition=ready pod -l app=nexchange-userservice --timeout=180s"
 
-                    // 4. 获取并显示状态信息
+                    // 4. Get Pod Status
                     def podName = sh(
                             script: "kubectl get pod -l app=nexchange-userservice -o jsonpath='{.items[0].metadata.name}'",
                             returnStdout: true
                     ).trim()
 
-                    // 5. 检查服务连接
+                    // 5. Check services connection
                     echo "Checking service connectivity..."
                     sh """
                 echo "Database Connection Info:"
@@ -370,47 +370,56 @@ pipeline {
                echo "\nChecking Application Health:"
                kubectl exec ${userServicePod} -- curl -s http://localhost:8081/actuator/health || true
            """
+                    sh """
+                echo "\nChecking Kafka Connection Info:"
+                kubectl logs ${userServicePod} | grep -i "Kafka connection successful"
+                
+                echo "\nChecking MySQL Connection Info:"
+                kubectl logs ${userServicePod} | grep -i "Connected to MySQL"
+                
+                echo "\nChecking Redis Connection Info:"
+                kubectl logs ${userServicePod} | grep -i "Connected to Redis"
+            """
+                    ///
+                    sh """
+                echo "\nChecking Kafka Connection Info:"
+                kubectl logs ${userServicePod} | grep -i "Kafka connection successful"
+                
+                echo "\nChecking MySQL Connection Info:"
+                kubectl logs ${userServicePod} | grep -i "Connected to MySQL"
+                
+                echo "\nChecking Redis Connection Info:"
+                kubectl logs ${userServicePod} | grep -i "Connected to Redis"
+            """
+
                 }
             }
         }
 
-//        stage('Verify User Service Deployment') {
-//            steps {
-//                script {
-//                    def userServicePods = sh(script: "kubectl get pods -l app=nexchange-userservice -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
-//                    echo "User Service pods status: ${userServicePods}"
-//
-//                    def userServiceDetails = sh(script: "kubectl describe deployment nexchange-userservice", returnStdout: true).trim()
-//                    echo "User Service Deployment Details:\n${userServiceDetails}"
-//
-//                    def userServiceLogs = sh(script: "kubectl logs -l app=nexchange-userservice --tail=50", returnStdout: true).trim()
-//                    echo "User Service Logs (last 50 lines):\n${userServiceLogs}"
-//                }
-//            }
-//        }
+        stage('Verify User Service Deployment') {
+            steps {
+                script {
+                    def userServicePods = sh(script: "kubectl get pods -l app=nexchange-userservice -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
+                    echo "User Service pods status: ${userServicePods}"
 
-//        stage('Get Service URL') {
-//            steps {
-//                script {
-//                    def serviceURL = sh(script: "kubectl get service nexchange-userservice -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'", returnStdout: true).trim()
-//                    echo "Service URL: http://${serviceURL}"
-//
-//                    def serviceDetails = sh(script: "kubectl get service nexchange-userservice -o yaml", returnStdout: true).trim()
-//                    echo "Service Details:\n${serviceDetails}"
-//                }
-//            }
-//        }
-//
-//        stage('Final Health Check') {
-//            steps {
-//                script {
-//                    def allPods = sh(script: "kubectl get pods --all-namespaces", returnStdout: true).trim()
-//                    echo "All pods across all namespaces:\n${allPods}"
-//
-//                    def allServices = sh(script: "kubectl get services --all-namespaces", returnStdout: true).trim()
-//                    echo "All services across all namespaces:\n${allServices}"
-//                }
-//            }
-//        }
+                    def userServiceDetails = sh(script: "kubectl describe deployment nexchange-userservice", returnStdout: true).trim()
+                    echo "User Service Deployment Details:\n${userServiceDetails}"
+
+                    def userServiceLogs = sh(script: "kubectl logs -l app=nexchange-userservice --tail=50", returnStdout: true).trim()
+                    echo "User Service Logs (last 50 lines):\n${userServiceLogs}"
+                }
+            }
+        }
+
+        stage('Get Cluster Ip') {
+            steps {
+                script {
+                    def serviceClusterIP = sh(script: "kubectl get service nexchange-userservice -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
+                    echo "Service ClusterIP: ${serviceClusterIP}"
+                }
+            }
+        }
+
+
     } 
 } 
