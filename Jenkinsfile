@@ -168,6 +168,7 @@ pipeline {
         stage('Deploy and Verify Zookeeper') {
             steps {
                 script {
+
                     sh "kubectl apply -f zookeeper-deployment.yaml"
                     sh "kubectl rollout status deployment/zookeeper"
 
@@ -224,6 +225,7 @@ pipeline {
             steps {
                 script {
                     // 部署 Kafka
+                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper"
                     sh "kubectl apply -f kafka-deployment.yaml"
                     sh "kubectl rollout status deployment/kafka"
 
