@@ -255,6 +255,19 @@ pipeline {
                     sh "kubectl apply -f redis-deployment.yaml"
                     sh "kubectl wait --for=condition=ready pod -l app=redis --timeout=60s"
 
+                    def mysqlPod = sh(
+                            script: "kubectl get pod -l app=mysql -o jsonpath='{.items[0].metadata.name}'",
+                            returnStdout: true
+                    ).trim()
+
+                    sh """
+                        echo "Creating database if not exists..."
+                        kubectl exec ${mysqlPod} -- mysql -uroot -padmin -e '
+                        CREATE DATABASE IF NOT EXISTS NexChangeUserDB;
+                        SHOW DATABASES;
+                        '
+                    """
+
                     // 输出服务信息
                     def mysqlInfo = sh(
                             script: """
@@ -274,6 +287,8 @@ pipeline {
                     ).trim()
 
                     echo "Database Services Status:\n${mysqlInfo}\n${redisInfo}"
+
+
                 }
             }
         }
