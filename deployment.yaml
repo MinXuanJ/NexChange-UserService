@@ -87,27 +87,27 @@ spec:
                 secretKeyRef:
                   name: mysql-secret
                   key: jwt-secret
-          # 调整探针配置
-          startupProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8081
-            failureThreshold: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness  # 修改路径
-              port: 8081
-            initialDelaySeconds: 90
-            periodSeconds: 10
-            failureThreshold: 3
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness   # 修改路径
-              port: 8081
-            initialDelaySeconds: 120
-            periodSeconds: 15
-            failureThreshold: 3
+#          # 调整探针配置
+#          startupProbe:
+#            httpGet:
+#              path: /actuator/health
+#              port: 8081
+#            failureThreshold: 30
+#            periodSeconds: 10
+#          readinessProbe:
+#            httpGet:
+#              path: /actuator/health/readiness  # 修改路径
+#              port: 8081
+#            initialDelaySeconds: 90
+#            periodSeconds: 10
+#            failureThreshold: 3
+#          livenessProbe:
+#            httpGet:
+#              path: /actuator/health/liveness   # 修改路径
+#              port: 8081
+#            initialDelaySeconds: 120
+#            periodSeconds: 15
+#            failureThreshold: 3
           # 增加资源限制
           resources:
             requests:
