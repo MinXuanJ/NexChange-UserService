@@ -96,6 +96,39 @@ public class KafkaConsumer {
         }
     }
 
+    @KafkaListener(topics = "PayOrder")
+    @Transactional
+    public void orderPayListen(String orderDTOJson) {
+        try {
+            UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
+            orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.PAID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @KafkaListener(topics = "ShipOrder")
+    @Transactional
+    public void orderShipListen(String orderDTOJson) {
+        try {
+            UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
+            orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.SHIPPING);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @KafkaListener(topics = "CompleteOrder")
+    @Transactional
+    public void orderCompleteListen(String orderDTOJson) {
+        try {
+            UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
+            orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.COMPLETED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @KafkaListener(topics = "newPost")
     @Transactional
     public void postPublishListen(String postDTOJson) {
