@@ -22,14 +22,9 @@ spec:
                   name: mysql-secret
                   key: root-password
             - name: MYSQL_DATABASE
-              value: userservice_db
+              value: "NexChangeUserDB"
             - name: MYSQL_USER
-              value: user
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: user-password
+              value: “root”
           ports:
             - containerPort: 3306
 

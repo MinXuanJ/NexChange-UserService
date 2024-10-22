@@ -3,8 +3,9 @@ kind: ConfigMap
 metadata:
   name: userservice-config
 data:
-  MYSQL_HOST: "mysql-user-service"
-  MYSQL_PORT: "3306"
+  DB_HOST: "mysql-user-service"
+  DB_PORT: "3306"
+  DB_NAME: "NexChangeUserDB"
   REDIS_HOST: "redis-service"
   REDIS_PORT: "6379"
   KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"

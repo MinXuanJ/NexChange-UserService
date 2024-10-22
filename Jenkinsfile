@@ -277,15 +277,98 @@ pipeline {
                 }
             }
         }
-//        stage('Deploy User Service') {
-//            steps {
-//                script {
-//                    sh 'kubectl apply -f deployment.yaml'
-//                    sh "kubectl rollout status deployment/nexchange-userservice"
-//                    echo "User Service deployed successfully"
-//                }
-//            }
-//        }
+        stage('Deploy User Service') {
+            steps {
+                script {
+                    // 1. 首先验证依赖服务是否就绪
+                    sh """
+                echo "Verifying dependencies..."
+                kubectl wait --for=condition=ready pod -l app=mysql --timeout=60s
+                kubectl wait --for=condition=ready pod -l app=redis --timeout=60s
+                kubectl wait --for=condition=ready pod -l app=kafka --timeout=60s
+                kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=60s
+            """
+
+                    // 2. 部署 User Service
+                    sh 'kubectl apply -f deployment.yaml'
+                    sh "kubectl rollout status deployment/nexchange-userservice"
+
+                    // 3. 等待 Pod 就绪
+                    sh "kubectl wait --for=condition=ready pod -l app=nexchange-userservice --timeout=180s"
+
+                    // 4. 获取并显示状态信息
+                    def podName = sh(
+                            script: "kubectl get pod -l app=nexchange-userservice -o jsonpath='{.items[0].metadata.name}'",
+                            returnStdout: true
+                    ).trim()
+
+                    // 5. 检查服务连接
+                    echo "Checking service connectivity..."
+                    sh """
+                echo "Database Connection Info:"
+                kubectl logs ${podName} | grep -i "database"
+                
+                echo "\nKafka Connection Info:"
+                kubectl logs ${podName} | grep -i "kafka"
+                
+                echo "\nRedis Connection Info:"
+                kubectl logs ${podName} | grep -i "redis"
+                
+                echo "\nApplication Health:"
+                kubectl logs ${podName} | grep -i "started"
+            """
+
+                }
+            }
+        }
+        stage('Test Service Connections') {
+            steps {
+                script {
+                    def userServicePod = sh(
+                            script: "kubectl get pod -l app=nexchange-userservice -o jsonpath='{.items[0].metadata.name}'",
+                            returnStdout: true
+                    ).trim()
+
+                    echo "Testing Service Connections..."
+
+                    // 测试 MySQL 连接
+                    sh """
+               echo "Testing MySQL Connection:"
+               kubectl exec ${userServicePod} -- nc -zv mysql-user-service 3306 || true
+               
+               echo "\nTesting MySQL Authentication:"
+               kubectl exec \$(kubectl get pod -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
+               mysql -uroot -padmin -e 'SELECT 1' || true
+           """
+
+                    // 测试 Redis 连接
+                    sh """
+               echo "\nTesting Redis Connection:"
+               kubectl exec ${userServicePod} -- nc -zv redis-service 6379 || true
+               
+               echo "\nTesting Redis Functionality:"
+               kubectl exec \$(kubectl get pod -l app=redis -o jsonpath='{.items[0].metadata.name}') -- \
+               redis-cli ping || true
+           """
+
+                    // 测试 Kafka 连接
+                    sh """
+               echo "\nTesting Kafka Connection:"
+               kubectl exec ${userServicePod} -- nc -zv kafka-service 9092 || true
+               
+               echo "\nTesting Kafka Topics:"
+               kubectl exec \$(kubectl get pod -l app=kafka -o jsonpath='{.items[0].metadata.name}') -- \
+               kafka-topics.sh --bootstrap-server localhost:9092 --list || true
+           """
+
+                    // 检查应用健康状态
+                    sh """
+               echo "\nChecking Application Health:"
+               kubectl exec ${userServicePod} -- curl -s http://localhost:8081/actuator/health || true
+           """
+                }
+            }
+        }
 
 //        stage('Verify User Service Deployment') {
 //            steps {

@@ -43,26 +43,28 @@ spec:
           ports:
             - containerPort: 8081
           env:
-            - name: MYSQL_HOST
+            - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
                   name: userservice-config
-                  key: MYSQL_HOST
-            - name: MYSQL_PORT
+                  key: DB_HOST
+            - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
                   name: userservice-config
-                  key: MYSQL_PORT
-            - name: MYSQL_USERNAME
+                  key: DB_NAME
+            - name: DB_USER
+              value: "root"
+            - name: DB_PORT
               valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: user-password
+                configMapKeyRef:
+                  name: userservice-config
+                  key: DB_PORT
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mysql-secret
-                  key: user-password
+                  key: root-password
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
