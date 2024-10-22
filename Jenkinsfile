@@ -335,7 +335,7 @@ pipeline {
 
                     echo "Testing Service Connections..."
 
-                    // 测试 MySQL 连接 (使用 curl 替代 nc)
+                    // 测试 MySQL 连接
                     sh """
                echo "Testing MySQL Connection with curl:"
                kubectl exec ${userServicePod} -- curl mysql-user-service:3306 || true
@@ -345,7 +345,7 @@ pipeline {
                mysql -uroot -padmin -e 'SELECT 1' || true
            """
 
-                    // 测试 Redis 连接 (使用 curl 替代 nc)
+                    // 测试 Redis 连接
                     sh """
                echo "\nTesting Redis Connection with curl:"
                kubectl exec ${userServicePod} -- curl redis-service:6379 || true
@@ -355,7 +355,7 @@ pipeline {
                redis-cli ping || true
            """
 
-                    // 测试 Kafka 连接 (使用 curl 替代 nc)
+                    // 测试 Kafka 连接
                     sh """
                echo "\nTesting Kafka Connection with curl:"
                kubectl exec ${userServicePod} -- curl kafka-service:9092 || true
