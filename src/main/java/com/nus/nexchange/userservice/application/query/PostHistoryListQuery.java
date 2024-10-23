@@ -13,11 +13,15 @@ import java.util.UUID;
 
 @Service
 public class PostHistoryListQuery implements IPostHistoryListQuery {
-    @Autowired
-    private PostHistoryListRepository postHistoryListRepository;
+    private final PostHistoryListRepository postHistoryListRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public PostHistoryListQuery(PostHistoryListRepository postHistoryListRepository, ModelMapper modelMapper) {
+        this.postHistoryListRepository = postHistoryListRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public PostHistoryListDTO getPostHistoryListByUserId(UUID userId) {

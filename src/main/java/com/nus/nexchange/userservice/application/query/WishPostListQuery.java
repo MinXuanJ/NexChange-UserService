@@ -14,11 +14,15 @@ import java.util.UUID;
 @Service
 public class WishPostListQuery implements IWishPostListQuery {
 
-    @Autowired
-    private WishPostListRepository wishPostListRepository;
+    private final WishPostListRepository wishPostListRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    ModelMapper modelMapper;
+    public WishPostListQuery(WishPostListRepository wishPostListRepository, ModelMapper modelMapper) {
+        this.wishPostListRepository = wishPostListRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public WishPostListDTO getWishPostListByUserId(UUID userId) {
@@ -33,7 +37,7 @@ public class WishPostListQuery implements IWishPostListQuery {
 //    }
 
     @Override
-    public Boolean comparePostWithWishList(UUID userId,UUID postId){
+    public Boolean comparePostWithWishList(UUID userId, UUID postId) {
         UserWishPostList wishPostList = wishPostListRepository.findByUserId(userId);
 
         if (wishPostList == null || wishPostList.getWishPosts() == null) {

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Data
 @NoArgsConstructor
@@ -28,11 +29,4 @@ public class UserPostHistory {
     @ManyToOne
     @JoinColumn(name = "post_history_list_id", nullable = false)
     private UserPostHistoryList userPostHistoryList;
-
-    public UserPostHistory(UUID refPostId, String refPostTitle, String refPostShortCutURL, PostStatus refPostStatus, String refPostURL) {
-        this.refPostId = refPostId;
-        this.refPostTitle = refPostTitle;
-        this.refPostShortCutURL = refPostShortCutURL;
-        this.refPostStatus = refPostStatus;
-    }
 }

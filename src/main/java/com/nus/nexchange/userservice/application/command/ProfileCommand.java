@@ -4,28 +4,28 @@ package com.nus.nexchange.userservice.application.command;
 import com.nus.nexchange.userservice.api.dto.ProfileDTO;
 import com.nus.nexchange.userservice.domain.aggregate.UserProfile;
 import com.nus.nexchange.userservice.infrastructure.repository.UserProfileRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProfileCommand implements IProfileCommand {
 
-    @Autowired
-    private UserProfileRepository profileRepository;
-    @Autowired
-    private ModelMapper modelMapper;
+    private final UserProfileRepository profileRepository;
 
-//    @Override
+    //    @Override
 //    public void createProfile(ProfileDTO profile) {
 //        profileRepository.save(profile);
 //    }
+    @Autowired
+    public ProfileCommand(UserProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
+    }
 
     @Override
     public void updateProfile(ProfileDTO profileDTO) {
         UserProfile profileFromDB = profileRepository.findByUserId(profileDTO.getUserId());
 
-        if(profileFromDB == null){
+        if (profileFromDB == null) {
             throw new IllegalArgumentException("Profile does not exist");
         }
         profileFromDB.setUserAvatarURL(profileDTO.getUserAvatarURL());
