@@ -33,15 +33,15 @@ pipeline {
             }
         }
 
-//        stage('Unit Test') {
-//            steps {
-//                script {
-//                    sh "docker-compose ps"
-//                    sh "mvn test"
-//                }
-//                junit '**/target/surefire-reports/*.xml'
-//             }
-//        }
+        stage('Unit Test') {
+            steps {
+                script {
+                    sh "docker-compose ps"
+                    sh "mvn test"
+                }
+                junit '**/target/surefire-reports/*.xml'
+             }
+        }
 
         stage('Build and Package') {
             steps {
