@@ -22,6 +22,9 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_MESSAGE_MAX_BYTES: 200000000
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 200000000
+      MAX_REQUEST_SIZE: 200000000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
