@@ -2,6 +2,7 @@ package com.nus.nexchange.userservice.application.command;
 
 import com.nus.nexchange.userservice.api.dto.OrderHistories.OrderHistoryDTO;
 import com.nus.nexchange.userservice.domain.aggregate.UserOrderHistoryList;
+import com.nus.nexchange.userservice.domain.entity.OrderStatus;
 import com.nus.nexchange.userservice.domain.entity.UserOrderHistory;
 import com.nus.nexchange.userservice.infrastructure.repository.OrderHistoryListRepository;
 import org.modelmapper.ModelMapper;
@@ -42,6 +43,19 @@ public class OrderHistoryListCommand implements IOrderHistoryListCommand {
         }
 
         userOrderHistoryList.updateUserOrderHistory(userOrderHistory);
+
+        orderHistoryListRepository.save(userOrderHistoryList);
+    }
+
+    @Override
+    public void updateOrderHistoryStatus(UUID userId, UUID orderId, OrderStatus orderStatus) {
+        UserOrderHistoryList userOrderHistoryList = orderHistoryListRepository.findByUserId(userId);
+
+        if (userOrderHistoryList == null) {
+            throw new IllegalArgumentException("Order history list not found");
+        }
+
+        userOrderHistoryList.updateUserOrderHistoryStatus(orderId, orderStatus);
 
         orderHistoryListRepository.save(userOrderHistoryList);
     }

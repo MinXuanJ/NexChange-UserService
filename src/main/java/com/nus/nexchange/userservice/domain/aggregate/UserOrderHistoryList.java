@@ -1,5 +1,6 @@
 package com.nus.nexchange.userservice.domain.aggregate;
 
+import com.nus.nexchange.userservice.domain.entity.OrderStatus;
 import com.nus.nexchange.userservice.domain.entity.UserOrderHistory;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -41,10 +42,23 @@ public class UserOrderHistoryList {
                 .filter(userOrderHistoryDB -> userOrderHistoryDB.getOrderHistoryId().equals(userOrderHistory.getOrderHistoryId()))
                 .findFirst().orElse(null);
 
-        existingOrderHistory.setRefOrderStatus(userOrderHistory.getRefOrderStatus());
-        existingOrderHistory.setRefOrderAmount(userOrderHistory.getRefOrderAmount());
-        existingOrderHistory.setRefOrderTitle(userOrderHistory.getRefOrderTitle());
-        existingOrderHistory.setRefOrderShoutCutURL(userOrderHistory.getRefOrderShoutCutURL());
+        existingOrderHistory.setRefOrderStatus(userOrderHistory.getRefOrderStatus() != null ?
+                userOrderHistory.getRefOrderStatus() : existingOrderHistory.getRefOrderStatus());
+        existingOrderHistory.setRefOrderPrice(userOrderHistory.getRefOrderPrice() !=null ?
+                userOrderHistory.getRefOrderPrice() : existingOrderHistory.getRefOrderPrice());
+        existingOrderHistory.setRefOrderTitle(userOrderHistory.getRefOrderTitle() !=null ?
+                userOrderHistory.getRefOrderTitle() : existingOrderHistory.getRefOrderTitle());
+        existingOrderHistory.setRefOrderShoutCutURL(userOrderHistory.getRefOrderShoutCutURL() !=null ?
+                userOrderHistory.getRefOrderShoutCutURL() : existingOrderHistory.getRefOrderShoutCutURL());
+    }
+
+    public void updateUserOrderHistoryStatus(UUID orderId, OrderStatus orderStatus) {
+
+        UserOrderHistory existingOrderHistory = userOrderHistories.stream()
+                .filter(userOrderHistoryDB -> userOrderHistoryDB.getRefOrderId().equals(orderId))
+                .findFirst().orElse(null);
+
+        existingOrderHistory.setRefOrderStatus(orderStatus);
     }
 
     public void deleteOrderHistory(UUID orderHistoryId) {
