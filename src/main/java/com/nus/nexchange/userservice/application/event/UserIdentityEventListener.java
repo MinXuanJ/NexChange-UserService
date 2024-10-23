@@ -33,8 +33,10 @@ public class UserIdentityEventListener {
     @EventListener
     public void handleUserIdentityCreatedEvent(UserIdentityCreatedEvent event) {
         UUID userId = event.getUserId();
+        String userName = event.getUserName();
+        String avatarURL = event.getAvatarURL();
 
-        UserProfile userProfile = new UserProfile(userId);
+        UserProfile userProfile = new UserProfile(userId,userName,avatarURL);
         UserContactList contactList = new UserContactList(userId);
         UserWishPostList wishPostList = new UserWishPostList(userId);
         UserOrderHistoryList orderHistoryList = new UserOrderHistoryList(userId);

@@ -34,7 +34,7 @@ public class UserCommand implements IUserCommand {
 
         userRepository.save(user);
 
-        UserIdentityCreatedEvent event = new UserIdentityCreatedEvent(user.getUserId());
+        UserIdentityCreatedEvent event = new UserIdentityCreatedEvent(user.getUserId(), user.getUserName(), userDTO.getAvatarURL());
         domainEventPublisher.publish(event);
     }
 

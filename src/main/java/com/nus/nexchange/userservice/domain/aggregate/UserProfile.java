@@ -21,7 +21,9 @@ public class UserProfile {
 
     private String userNickName;
 
-    public UserProfile(UUID userId) {
+    public UserProfile(UUID userId, String userNickName, String userAvatarURL) {
         this.userId = userId;
+        this.userNickName = userNickName;
+        this.userAvatarURL = userAvatarURL;
     }
 }
