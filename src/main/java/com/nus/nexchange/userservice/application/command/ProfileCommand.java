@@ -23,7 +23,7 @@ public class ProfileCommand implements IProfileCommand {
 
     @Override
     public void updateProfile(ProfileDTO profileDTO) {
-        UserProfile profileFromDB = profileRepository.findById(profileDTO.getUserProfileId()).orElse(null);
+        UserProfile profileFromDB = profileRepository.findByUserId(profileDTO.getUserId());
 
         if(profileFromDB == null){
             throw new IllegalArgumentException("Profile does not exist");

@@ -11,7 +11,7 @@ import java.util.UUID;
 public class ProfileDTO {
     private UUID userProfileId;
 
-//    private UUID userId;
+    private UUID userId;
 
     private String userAvatarURL;
 

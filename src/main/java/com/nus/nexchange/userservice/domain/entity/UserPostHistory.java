@@ -14,7 +14,7 @@ public class UserPostHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID postId;
+    private UUID postHistoryId;
 
     private UUID refPostId;
 
@@ -22,6 +22,7 @@ public class UserPostHistory {
 
     private String refPostShortCutURL;
 
+    @Enumerated(EnumType.STRING)
     private PostStatus refPostStatus;
 
     @ManyToOne

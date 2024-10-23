@@ -3,11 +3,14 @@ package com.nus.nexchange.userservice.api.dto.OrderHistories;
 import com.nus.nexchange.userservice.domain.entity.OrderStatus;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
 public class OrderHistoryDTO {
     private UUID orderHistoryListId;
+
+    private UUID userId;
 
     private UUID orderHistoryId;
 
@@ -17,7 +20,7 @@ public class OrderHistoryDTO {
 
     private String refOrderShoutCutURL;
 
-    private String refOrderAmount;
+    private BigDecimal refOrderPrice;
 
     private OrderStatus refOrderStatus;
 }

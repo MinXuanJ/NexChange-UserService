@@ -9,7 +9,9 @@ import java.util.UUID;
 public class PostHistoryDTO {
     private UUID postHistoryListId;
 
-    private UUID postId;
+    private UUID userId;
+
+    private UUID postHistoryId;
 
     private UUID refPostId;
 

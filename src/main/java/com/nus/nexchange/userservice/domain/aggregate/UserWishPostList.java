@@ -34,12 +34,12 @@ public class UserWishPostList {
     }
 
     public void updateUserWishPost(UserWishPost userWishpost) {
-        if (userWishpost == null || userWishpost.getPostId() == null){
+        if (userWishpost == null || userWishpost.getWishPostId() == null){
             throw new IllegalArgumentException("userWishpost is null");
         }
 
         UserWishPost wishPostExist = wishPosts.stream()
-                .filter(wishPost -> wishPost.getPostId().equals(userWishpost.getPostId()))
+                .filter(wishPost -> wishPost.getWishPostId().equals(userWishpost.getWishPostId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("userWishpost not found"));
 
@@ -50,7 +50,7 @@ public class UserWishPostList {
 
     public void deleteUserWishPost(UUID wishPostId) {
         UserWishPost userWishPostToRemove = wishPosts.stream()
-                .filter(wishPost -> wishPost.getPostId().equals(wishPostId))
+                .filter(wishPost -> wishPost.getWishPostId().equals(wishPostId))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("Wishpsot not found"));
 
         wishPosts.remove(userWishPostToRemove);

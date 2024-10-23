@@ -58,4 +58,14 @@ public class WishPostListController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/compare")
+    public ResponseEntity<?> compareWishPostList(@RequestParam UUID userId, @RequestParam UUID postId) {
+        try{
+            Boolean result = wishPostListQuery.comparePostWithWishList(userId, postId);
+            return ResponseEntity.ok(result);
+        }catch(IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

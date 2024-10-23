@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -23,19 +24,20 @@ public class UserOrderHistory {
 
     private String refOrderShoutCutURL;
 
-    private String refOrderAmount;
+    private BigDecimal refOrderPrice;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus refOrderStatus;
 
     @ManyToOne
     @JoinColumn(name = "order_history_list_id", nullable = false)
     private UserOrderHistoryList userOrderHistoryList;
 
-    public UserOrderHistory(UUID refOrderId, String refOrderTitle, String refOrderShoutCutURL, String refOrderAmount, OrderStatus refOrderStatus, String refOrderURL) {
+    public UserOrderHistory(UUID refOrderId, String refOrderTitle, String refOrderShoutCutURL, BigDecimal refOrderPrice, OrderStatus refOrderStatus, String refOrderURL) {
         this.refOrderId = refOrderId;
         this.refOrderTitle = refOrderTitle;
         this.refOrderShoutCutURL = refOrderShoutCutURL;
-        this.refOrderAmount = refOrderAmount;
+        this.refOrderPrice = refOrderPrice;
         this.refOrderStatus = refOrderStatus;
     }
 }

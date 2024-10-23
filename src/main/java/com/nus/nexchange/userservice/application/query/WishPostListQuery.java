@@ -32,6 +32,18 @@ public class WishPostListQuery implements IWishPostListQuery {
 //        return getWishPostListDTO(wishPostList);
 //    }
 
+    @Override
+    public Boolean comparePostWithWishList(UUID userId,UUID postId){
+        UserWishPostList wishPostList = wishPostListRepository.findByUserId(userId);
+
+        if (wishPostList == null || wishPostList.getWishPosts() == null) {
+            throw new IllegalArgumentException("Invalid wish post list");
+        }
+
+        return wishPostList.getWishPosts().stream()
+                .anyMatch(wishPost -> wishPost.getRefPostId().equals(postId));
+    }
+
     private WishPostListDTO getWishPostListDTO(UserWishPostList userWishPostList) {
         if (userWishPostList == null) {
             throw new IllegalArgumentException("Wishpost list not found");
