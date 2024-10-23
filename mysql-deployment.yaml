@@ -27,6 +27,13 @@ spec:
               value: “root”
           ports:
             - containerPort: 3306
+          volumeMounts:
+            - name: mysql-persistent-storage-user
+              mountPath: /var/lib/mysql  # MySQL 的数据目录
+      volumes:
+            - name: mysql-persistent-storage-user
+              persistentVolumeClaim:
+                claimName: mysql-pvc-user  # 持久卷声明名称
 
 ---
 apiVersion: v1
