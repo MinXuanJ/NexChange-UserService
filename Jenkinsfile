@@ -192,6 +192,7 @@ pipeline {
         stage('Deploy and Verify Kafka') {
             steps {
                 script {
+                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=60s"
                     sh "kubectl apply -f kafka-deployment.yaml"
                     sh "kubectl wait --for=condition=ready pod -l app=kafka --timeout=120s"
 
