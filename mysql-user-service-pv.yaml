@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-user-pv
+spec:
+  capacity:
+    storage: 10Gi  # 存储大小，可以根据需求调整
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard  # 请根据你的存储类修改
+  hostPath:
+    path: "/mnt/data/mysql-user"  # 集群节点上的文件路径

@@ -213,6 +213,21 @@ pipeline {
             }
         }
 
+        stage('Create PV and PVC for MySQL') {
+            steps {
+                script {
+                    // 创建 MySQL 的 PV 和 PVC
+                    sh "kubectl apply -f mysql-user-service-pv.yaml"
+                    sh "kubectl apply -f mysql-user-service-pvc.yaml"
+
+                    // 等待 PVC 准备就绪
+                    sh "kubectl wait --for=condition=bound pvc/mysql-pvc-user --timeout=60s"
+
+                    echo "PV and PVC for MySQL created successfully."
+                }
+            }
+        }
+
         stage('Deploy and Verify Database Services') {
             steps {
                 script {
