@@ -13,11 +13,15 @@ import java.util.UUID;
 @Service
 public class WishPostListCommand implements IWishPostListCommand {
 
-    @Autowired
-    private WishPostListRepository wishPostListRepository;
+    private final WishPostListRepository wishPostListRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    ModelMapper modelMapper;
+    public WishPostListCommand(WishPostListRepository wishPostListRepository, ModelMapper modelMapper) {
+        this.wishPostListRepository = wishPostListRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public void addWishPost(WishPostDTO wishPostDTO) {

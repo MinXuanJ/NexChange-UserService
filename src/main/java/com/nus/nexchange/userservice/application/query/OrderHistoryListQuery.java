@@ -13,11 +13,15 @@ import java.util.UUID;
 
 @Service
 public class OrderHistoryListQuery implements IOrderHistoryListQuery {
-    @Autowired
-    private OrderHistoryListRepository orderHistoryListRepository;
+    private final OrderHistoryListRepository orderHistoryListRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public OrderHistoryListQuery(OrderHistoryListRepository orderHistoryListRepository, ModelMapper modelMapper) {
+        this.orderHistoryListRepository = orderHistoryListRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public OrderHistoryListDTO getOrderHistoryListByUserId(UUID userId) {

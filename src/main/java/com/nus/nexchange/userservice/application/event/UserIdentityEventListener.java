@@ -11,26 +11,32 @@ import java.util.UUID;
 
 @Component
 public class UserIdentityEventListener {
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
+
+    private final ContactListRepository contactListRepository;
+
+    private final WishPostListRepository wishPostListRepository;
+
+    private final OrderHistoryListRepository orderHistoryListRepository;
+
+    private final PostHistoryListRepository postHistoryListRepository;
 
     @Autowired
-    private ContactListRepository contactListRepository;
-
-    @Autowired
-    private WishPostListRepository wishPostListRepository;
-
-    @Autowired
-    private OrderHistoryListRepository orderHistoryListRepository;
-
-    @Autowired
-    private PostHistoryListRepository postHistoryListRepository;
+    public UserIdentityEventListener(UserProfileRepository userProfileRepository, ContactListRepository contactListRepository, WishPostListRepository wishPostListRepository, OrderHistoryListRepository orderHistoryListRepository, PostHistoryListRepository postHistoryListRepository) {
+        this.userProfileRepository = userProfileRepository;
+        this.contactListRepository = contactListRepository;
+        this.wishPostListRepository = wishPostListRepository;
+        this.orderHistoryListRepository = orderHistoryListRepository;
+        this.postHistoryListRepository = postHistoryListRepository;
+    }
 
     @EventListener
     public void handleUserIdentityCreatedEvent(UserIdentityCreatedEvent event) {
         UUID userId = event.getUserId();
+        String userName = event.getUserName();
+        String avatarURL = event.getAvatarURL();
 
-        UserProfile userProfile = new UserProfile(userId);
+        UserProfile userProfile = new UserProfile(userId,userName,avatarURL);
         UserContactList contactList = new UserContactList(userId);
         UserWishPostList wishPostList = new UserWishPostList(userId);
         UserOrderHistoryList orderHistoryList = new UserOrderHistoryList(userId);

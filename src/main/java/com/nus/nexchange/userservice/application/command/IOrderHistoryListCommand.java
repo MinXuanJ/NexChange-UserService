@@ -6,8 +6,11 @@ import com.nus.nexchange.userservice.domain.entity.OrderStatus;
 import java.util.UUID;
 
 public interface IOrderHistoryListCommand {
-    public void addOrderHistory(OrderHistoryDTO orderHistoryDTO);
-    public void updateOrderHistory(OrderHistoryDTO orderHistoryDTO);
-    public void updateOrderHistoryStatus(UUID userId, UUID orderId, OrderStatus orderStatus);
-    public void removeOrderHistory(UUID orderHistoryId,UUID orderHistoryListId);
+    void addOrderHistory(OrderHistoryDTO orderHistoryDTO);
+
+//    void updateOrderHistory(OrderHistoryDTO orderHistoryDTO);
+
+    void updateOrderHistoryStatus(UUID userId, UUID orderId, OrderStatus orderStatus);
+
+    void removeOrderHistory(UUID orderHistoryId, UUID orderHistoryListId);
 }

@@ -33,25 +33,25 @@ public class UserWishPostList {
         userWishpost.setUserWishPostList(this);
     }
 
-    public void updateUserWishPost(UserWishPost userWishpost) {
-        if (userWishpost == null || userWishpost.getWishPostId() == null){
-            throw new IllegalArgumentException("userWishpost is null");
-        }
-
-        UserWishPost wishPostExist = wishPosts.stream()
-                .filter(wishPost -> wishPost.getWishPostId().equals(userWishpost.getWishPostId()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("userWishpost not found"));
-
-        wishPostExist.setRefPostId(userWishpost.getRefPostId());
-        wishPostExist.setRefPostTitle(userWishpost.getRefPostTitle());
-        wishPostExist.setRefPostStatus(userWishpost.getRefPostStatus());
-    }
+//    public void updateUserWishPost(UserWishPost userWishpost) {
+//        if (userWishpost == null || userWishpost.getWishPostId() == null){
+//            throw new IllegalArgumentException("userWishpost is null");
+//        }
+//
+//        UserWishPost wishPostExist = wishPosts.stream()
+//                .filter(wishPost -> wishPost.getWishPostId().equals(userWishpost.getWishPostId()))
+//                .findFirst()
+//                .orElseThrow(() -> new IllegalArgumentException("userWishpost not found"));
+//
+//        wishPostExist.setRefPostId(userWishpost.getRefPostId());
+//        wishPostExist.setRefPostTitle(userWishpost.getRefPostTitle());
+//        wishPostExist.setRefPostStatus(userWishpost.getRefPostStatus());
+//    }
 
     public void deleteUserWishPost(UUID wishPostId) {
         UserWishPost userWishPostToRemove = wishPosts.stream()
                 .filter(wishPost -> wishPost.getWishPostId().equals(wishPostId))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Wishpsot not found"));
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Wishpost not found"));
 
         wishPosts.remove(userWishPostToRemove);
         userWishPostToRemove.setUserWishPostList(null);

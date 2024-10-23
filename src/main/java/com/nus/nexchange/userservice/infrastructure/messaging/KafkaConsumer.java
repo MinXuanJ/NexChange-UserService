@@ -18,25 +18,33 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
 @Service
 public class KafkaConsumer {
-    @Autowired
-    private OrderHistoryListCommand orderHistoryListCommand;
+    private static final Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
+
+    private final OrderHistoryListCommand orderHistoryListCommand;
+
+    private final PostHistoryListCommand postHistoryListCommand;
+
+    private final ContactListQuery contactListQuery;
+
+    private final KafkaProducer kafkaProducer;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private PostHistoryListCommand postHistoryListCommand;
-
-    @Autowired
-    private ContactListQuery contactListQuery;
-
-    @Autowired
-    private KafkaProducer kafkaProducer;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    public KafkaConsumer(OrderHistoryListCommand orderHistoryListCommand, PostHistoryListCommand postHistoryListCommand, ContactListQuery contactListQuery, KafkaProducer kafkaProducer, ModelMapper modelMapper) {
+        this.orderHistoryListCommand = orderHistoryListCommand;
+        this.postHistoryListCommand = postHistoryListCommand;
+        this.contactListQuery = contactListQuery;
+        this.kafkaProducer = kafkaProducer;
+        this.modelMapper = modelMapper;
+    }
 
     @KafkaListener(topics = "CreateOrder")
     @Transactional
@@ -57,7 +65,7 @@ public class KafkaConsumer {
 
             kafkaProducer.sendMessage("OrderBuyer", orderContactDTOJson);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
     }
 
@@ -70,7 +78,7 @@ public class KafkaConsumer {
 
             orderHistoryListCommand.addOrderHistory(orderHistoryDTO);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
     }
 
@@ -81,7 +89,7 @@ public class KafkaConsumer {
             UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
             orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.CANCELED);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
     }
 
@@ -92,7 +100,7 @@ public class KafkaConsumer {
             UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
             orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.EXPIRED);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
     }
 
@@ -103,7 +111,7 @@ public class KafkaConsumer {
             UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
             orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.PAID);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
     }
 
@@ -114,7 +122,7 @@ public class KafkaConsumer {
             UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
             orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.SHIPPING);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
     }
 
@@ -125,7 +133,7 @@ public class KafkaConsumer {
             UUIDOrderDTO UUIDOrderDTO = new ObjectMapper().readValue(orderDTOJson, UUIDOrderDTO.class);
             orderHistoryListCommand.updateOrderHistoryStatus(UUIDOrderDTO.getUserId(), UUIDOrderDTO.getOrderId(), OrderStatus.COMPLETED);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
     }
 
@@ -137,7 +145,7 @@ public class KafkaConsumer {
             PostHistoryDTO postHistory = convertToPostHistoryDTO(postDTO);
             postHistoryListCommand.addPostHistory(postHistory);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
     }
 
@@ -149,7 +157,7 @@ public class KafkaConsumer {
             PostHistoryDTO postHistory = convertToPostHistoryDTO(postDTO);
             postHistoryListCommand.updatePostHistory(postHistory);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
     }
 
@@ -162,12 +170,8 @@ public class KafkaConsumer {
             UUID postId = postDTO.getPostId();
             postHistoryListCommand.removePostHistory(postId, userId);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred: {}", e.getMessage(), e);
         }
-    }
-
-    private OrderHistoryDTO convertToOrderHistoryDTO(PostDTO postDTO) {
-        return null;
     }
 
     private PostHistoryDTO convertToPostHistoryDTO(PostDTO postDTO) {

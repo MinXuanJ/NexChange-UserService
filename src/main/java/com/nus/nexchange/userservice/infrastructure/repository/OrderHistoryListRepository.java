@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface OrderHistoryListRepository extends JpaRepository<UserOrderHistoryList, UUID> {
-    public UserOrderHistoryList findByUserId(UUID userId);
+    UserOrderHistoryList findByUserId(UUID userId);
 }

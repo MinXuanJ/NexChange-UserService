@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Data
 @NoArgsConstructor
@@ -29,11 +30,4 @@ public class UserContact {
     @ManyToOne
     @JoinColumn(name = "contact_list_id", nullable = false)
     private UserContactList userContactList;
-
-    public UserContact(String contactName, String contactAddress, String postalCode, String contactNumber) {
-        this.contactName = contactName;
-        this.contactAddress = contactAddress;
-        this.postalCode = postalCode;
-        this.contactNumber = contactNumber;
-    }
 }

@@ -3,7 +3,6 @@ package com.nus.nexchange.userservice.api.controller;
 import com.nus.nexchange.userservice.api.dto.OrderHistories.OrderHistoryListDTO;
 import com.nus.nexchange.userservice.application.command.OrderHistoryListCommand;
 import com.nus.nexchange.userservice.application.query.OrderHistoryListQuery;
-import com.nus.nexchange.userservice.infrastructure.messaging.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +12,15 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/user-system/order-histories")
 public class OrderHistoryListController {
-    @Autowired
-    private OrderHistoryListQuery orderHistoryListQuery;
+    private final OrderHistoryListQuery orderHistoryListQuery;
+
+    private final OrderHistoryListCommand orderHistoryListCommand;
 
     @Autowired
-    private OrderHistoryListCommand orderHistoryListCommand;
-
-    @Autowired
-    private KafkaProducer kafkaProducer;
+    public OrderHistoryListController(OrderHistoryListQuery orderHistoryListQuery, OrderHistoryListCommand orderHistoryListCommand) {
+        this.orderHistoryListQuery = orderHistoryListQuery;
+        this.orderHistoryListCommand = orderHistoryListCommand;
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<OrderHistoryListDTO> getOrderHistoryList(@PathVariable UUID userId) {
@@ -31,16 +31,6 @@ public class OrderHistoryListController {
             return ResponseEntity.notFound().build();
         }
     }
-
-//    @PostMapping("/new-order-history")
-//    public ResponseEntity<String> addOrderHistory(@RequestBody OrderHistoryListDTO orderHistoryListDTO) {
-//
-//    }
-
-//    @PutMapping("/update")
-//    public ResponseEntity<String> updateOrderHistoryList(@RequestBody OrderHistoryListDTO orderHistoryListDTO) {
-//
-//    }
 
     @DeleteMapping
     public ResponseEntity<String> deleteOrderHistoryList(@RequestParam UUID orderHistoryListId, @RequestParam UUID orderHistoryId) {

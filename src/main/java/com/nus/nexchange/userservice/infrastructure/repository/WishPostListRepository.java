@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface WishPostListRepository extends JpaRepository<UserWishPostList, UUID> {
-    public UserWishPostList findByUserId(UUID userId);
+    UserWishPostList findByUserId(UUID userId);
 }

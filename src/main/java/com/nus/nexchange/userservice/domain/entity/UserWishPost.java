@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Data
 @Entity
 @NoArgsConstructor
@@ -24,6 +25,6 @@ public class UserWishPost {
     private PostStatus refPostStatus;
 
     @ManyToOne
-    @JoinColumn(name = "wishpost_list_id",nullable = false)
+    @JoinColumn(name = "wishpost_list_id", nullable = false)
     private UserWishPostList userWishPostList;
 }

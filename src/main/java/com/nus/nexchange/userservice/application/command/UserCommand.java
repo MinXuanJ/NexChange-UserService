@@ -13,14 +13,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserCommand implements IUserCommand {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final DomainEventPublisher domainEventPublisher;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private DomainEventPublisher domainEventPublisher;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    public UserCommand(UserRepository userRepository, DomainEventPublisher domainEventPublisher, ModelMapper modelMapper) {
+        this.userRepository = userRepository;
+        this.domainEventPublisher = domainEventPublisher;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public void createUser(UserDTO userDTO) {
@@ -30,7 +34,7 @@ public class UserCommand implements IUserCommand {
 
         userRepository.save(user);
 
-        UserIdentityCreatedEvent event = new UserIdentityCreatedEvent(user.getUserId());
+        UserIdentityCreatedEvent event = new UserIdentityCreatedEvent(user.getUserId(), user.getUserName(), userDTO.getAvatarURL());
         domainEventPublisher.publish(event);
     }
 
@@ -38,7 +42,7 @@ public class UserCommand implements IUserCommand {
     public void resetPassword(UserDTO userDTO) {
         UserIdentity user = userRepository.findById(userDTO.getUserId()).orElse(null);
 
-        if(user == null){
+        if (user == null) {
             throw new IllegalArgumentException("User not found");
         }
 
