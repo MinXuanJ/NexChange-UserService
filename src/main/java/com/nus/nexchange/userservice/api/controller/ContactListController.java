@@ -4,7 +4,6 @@ import com.nus.nexchange.userservice.api.dto.Contacts.ContactDTO;
 import com.nus.nexchange.userservice.api.dto.Contacts.ContactListDTO;
 import com.nus.nexchange.userservice.application.command.ContactListCommand;
 import com.nus.nexchange.userservice.application.query.ContactListQuery;
-import com.nus.nexchange.userservice.infrastructure.messaging.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +13,17 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/user-system/contacts")
 public class ContactListController {
-    @Autowired
-    private ContactListQuery contactListQuery;
+
+    private final ContactListQuery contactListQuery;
+
+    private final ContactListCommand contactListCommand;
+
 
     @Autowired
-    private ContactListCommand contactListCommand;
-
-    @Autowired
-    private KafkaProducer kafkaProducer;
+    public ContactListController(ContactListQuery contactListQuery, ContactListCommand contactListCommand) {
+        this.contactListQuery = contactListQuery;
+        this.contactListCommand = contactListCommand;
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<ContactListDTO> viewContactList(@PathVariable UUID userId) {
@@ -42,15 +44,6 @@ public class ContactListController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-//    @GetMapping("/contact/{contactId}")
-//    public ResponseEntity<ContactDTO> viewContact(@PathVariable UUID contactId) {
-//        try {
-//            return ResponseEntity.ok(null);
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
 
     @PutMapping("/update")
     public ResponseEntity<String> updateContact(@RequestBody ContactDTO contactDTO) {

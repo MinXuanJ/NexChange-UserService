@@ -19,10 +19,14 @@ public class JwtUtil {
 
     @Value("${JWT_SECRET}")
     private String secretKey;
-    private int expirationTime = 1000 * 60 * 60;
+    private final int expirationTime = 1000 * 60 * 60;
+
+    private final RedisService redisService;
 
     @Autowired
-    private RedisService redisService;
+    public JwtUtil(RedisService redisService) {
+        this.redisService = redisService;
+    }
 
     public long getExpirationTime() {
         return expirationTime;

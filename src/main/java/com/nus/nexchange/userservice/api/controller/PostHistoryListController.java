@@ -1,9 +1,7 @@
 package com.nus.nexchange.userservice.api.controller;
 
 import com.nus.nexchange.userservice.api.dto.PostHistories.PostHistoryListDTO;
-import com.nus.nexchange.userservice.application.command.PostHistoryListCommand;
 import com.nus.nexchange.userservice.application.query.PostHistoryListQuery;
-import com.nus.nexchange.userservice.infrastructure.messaging.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +11,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/user-system/post-histories")
 public class PostHistoryListController {
-    @Autowired
-    private PostHistoryListQuery postHistoryListQuery;
+    private final PostHistoryListQuery postHistoryListQuery;
 
     @Autowired
-    private PostHistoryListCommand postHistoryListCommand;
-
-    @Autowired
-    private KafkaProducer kafkaProducer;
+    public PostHistoryListController(PostHistoryListQuery postHistoryListQuery) {
+        this.postHistoryListQuery = postHistoryListQuery;
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<PostHistoryListDTO> getPostHistoryList(@PathVariable UUID userId) {
@@ -31,24 +27,4 @@ public class PostHistoryListController {
             return ResponseEntity.notFound().build();
         }
     }
-
-//    @PostMapping("/new-post-history")
-//    public ResponseEntity<String> addPostHistory(@RequestBody PostHistoryListDTO postHistoryListDTO) {
-//
-//    }
-//
-//    @PutMapping("/update")
-//    public ResponseEntity<String> updatePostHistory(@RequestBody PostHistoryListDTO postHistoryListDTO) {
-//
-//    }
-
-//    @DeleteMapping
-//    public ResponseEntity<String> deletePostHistoryList(@RequestParam UUID postHistoryListId, @RequestParam UUID postHistoryId) {
-//        try {
-//            postHistoryListCommand.removePostHistory(postHistoryId, postHistoryListId);
-//            return ResponseEntity.ok("Deleted post history");
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
 }

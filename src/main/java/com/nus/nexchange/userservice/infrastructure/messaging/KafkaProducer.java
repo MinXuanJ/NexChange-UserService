@@ -1,6 +1,5 @@
 package com.nus.nexchange.userservice.infrastructure.messaging;
 
-import com.nus.nexchange.userservice.api.dto.UserDTO;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 

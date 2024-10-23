@@ -13,11 +13,15 @@ import java.util.UUID;
 @Service
 public class ContactListCommand implements IContactListCommand {
 
-    @Autowired
-    private ContactListRepository contactListRepository;
+    private final ContactListRepository contactListRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public ContactListCommand(ContactListRepository contactListRepository, ModelMapper modelMapper) {
+        this.contactListRepository = contactListRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public void addContact(ContactDTO contactDTO) {

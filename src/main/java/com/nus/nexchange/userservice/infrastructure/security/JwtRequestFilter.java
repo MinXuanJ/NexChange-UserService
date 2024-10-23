@@ -1,6 +1,7 @@
 package com.nus.nexchange.userservice.infrastructure.security;
 
 import com.nus.nexchange.userservice.application.security.MyUserDetailService;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,9 +25,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
     private MyUserDetailService userDetailsService;
-    
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
         final String authorizationHeader = request.getHeader("Authorization");
 

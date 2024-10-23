@@ -13,11 +13,15 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/user-system/wish-posts")
 public class WishPostListController {
-    @Autowired
-    private WishPostListQuery wishPostListQuery;
+    private final WishPostListQuery wishPostListQuery;
+
+    private final WishPostListCommand wishPostListCommand;
 
     @Autowired
-    private WishPostListCommand wishPostListCommand;
+    public WishPostListController(WishPostListQuery wishPostListQuery, WishPostListCommand wishPostListCommand) {
+        this.wishPostListQuery = wishPostListQuery;
+        this.wishPostListCommand = wishPostListCommand;
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<WishPostListDTO> viewWishPostList(@PathVariable UUID userId) {
@@ -39,16 +43,6 @@ public class WishPostListController {
         }
     }
 
-//    @PutMapping("/update")
-//    public ResponseEntity<String> updateWishPost(@RequestBody WishPostDTO wishPostDTO) {
-//        try {
-//            wishPostListCommand.updateWishPost(wishPostDTO);
-//            return ResponseEntity.ok("Updated wishpost");
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-
     @DeleteMapping
     public ResponseEntity<String> deleteWishPost(@RequestParam UUID wishPostListId, @RequestParam UUID wishPostId) {
         try {
@@ -61,10 +55,10 @@ public class WishPostListController {
 
     @GetMapping("/compare")
     public ResponseEntity<?> compareWishPostList(@RequestParam UUID userId, @RequestParam UUID postId) {
-        try{
+        try {
             Boolean result = wishPostListQuery.comparePostWithWishList(userId, postId);
             return ResponseEntity.ok(result);
-        }catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

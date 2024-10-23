@@ -12,11 +12,16 @@ import java.util.UUID;
 
 @Service
 public class PostHistoryListCommand implements IPostHistoryListCommand {
-    @Autowired
-    private PostHistoryListRepository postHistoryListRepository;
+
+    private final PostHistoryListRepository postHistoryListRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public PostHistoryListCommand(PostHistoryListRepository postHistoryListRepository, ModelMapper modelMapper) {
+        this.postHistoryListRepository = postHistoryListRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public void addPostHistory(PostHistoryDTO postHistoryDTO) {
@@ -38,24 +43,11 @@ public class PostHistoryListCommand implements IPostHistoryListCommand {
         postHistoryListRepository.save(userPostHistoryList);
     }
 
-//    @Override
-//    public void removePostHistory(UUID postHistoryId, UUID postHistoryListId){
-//        UserPostHistoryList postHistoryList = postHistoryListRepository.findById(postHistoryListId).orElse(null);
-//
-//        if(postHistoryList == null){
-//            throw new IllegalArgumentException("PostHistoryList not found");
-//        }
-//
-//        postHistoryList.deletePostHistory(postHistoryId);
-//
-//        postHistoryListRepository.save(postHistoryList);
-//    }
-
     @Override
-    public void removePostHistory(UUID postId,UUID userId){
+    public void removePostHistory(UUID postId, UUID userId) {
         UserPostHistoryList postHistoryList = postHistoryListRepository.findByUserId(userId);
 
-        if(postHistoryList == null){
+        if (postHistoryList == null) {
             throw new IllegalArgumentException("PostHistoryList not found");
         }
 

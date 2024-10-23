@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -33,24 +34,24 @@ public class UserOrderHistoryList {
         userOrderHistory.setUserOrderHistoryList(this);
     }
 
-    public void updateUserOrderHistory(UserOrderHistory userOrderHistory) {
-        if (userOrderHistory == null || userOrderHistory.getOrderHistoryId() == null) {
-            throw new IllegalArgumentException("userOrderHistory is null");
-        }
-
-        UserOrderHistory existingOrderHistory = userOrderHistories.stream()
-                .filter(userOrderHistoryDB -> userOrderHistoryDB.getOrderHistoryId().equals(userOrderHistory.getOrderHistoryId()))
-                .findFirst().orElse(null);
-
-        existingOrderHistory.setRefOrderStatus(userOrderHistory.getRefOrderStatus() != null ?
-                userOrderHistory.getRefOrderStatus() : existingOrderHistory.getRefOrderStatus());
-        existingOrderHistory.setRefOrderPrice(userOrderHistory.getRefOrderPrice() !=null ?
-                userOrderHistory.getRefOrderPrice() : existingOrderHistory.getRefOrderPrice());
-        existingOrderHistory.setRefOrderTitle(userOrderHistory.getRefOrderTitle() !=null ?
-                userOrderHistory.getRefOrderTitle() : existingOrderHistory.getRefOrderTitle());
-        existingOrderHistory.setRefOrderShoutCutURL(userOrderHistory.getRefOrderShoutCutURL() !=null ?
-                userOrderHistory.getRefOrderShoutCutURL() : existingOrderHistory.getRefOrderShoutCutURL());
-    }
+//    public void updateUserOrderHistory(UserOrderHistory userOrderHistory) {
+//        if (userOrderHistory == null || userOrderHistory.getOrderHistoryId() == null) {
+//            throw new IllegalArgumentException("userOrderHistory is null");
+//        }
+//
+//        UserOrderHistory existingOrderHistory = userOrderHistories.stream()
+//                .filter(userOrderHistoryDB -> userOrderHistoryDB.getOrderHistoryId().equals(userOrderHistory.getOrderHistoryId()))
+//                .findFirst().orElse(null);
+//
+//        existingOrderHistory.setRefOrderStatus(userOrderHistory.getRefOrderStatus() != null ?
+//                userOrderHistory.getRefOrderStatus() : existingOrderHistory.getRefOrderStatus());
+//        existingOrderHistory.setRefOrderPrice(userOrderHistory.getRefOrderPrice() !=null ?
+//                userOrderHistory.getRefOrderPrice() : existingOrderHistory.getRefOrderPrice());
+//        existingOrderHistory.setRefOrderTitle(userOrderHistory.getRefOrderTitle() !=null ?
+//                userOrderHistory.getRefOrderTitle() : existingOrderHistory.getRefOrderTitle());
+//        existingOrderHistory.setRefOrderShoutCutURL(userOrderHistory.getRefOrderShoutCutURL() !=null ?
+//                userOrderHistory.getRefOrderShoutCutURL() : existingOrderHistory.getRefOrderShoutCutURL());
+//    }
 
     public void updateUserOrderHistoryStatus(UUID orderId, OrderStatus orderStatus) {
 
@@ -58,7 +59,7 @@ public class UserOrderHistoryList {
                 .filter(userOrderHistoryDB -> userOrderHistoryDB.getRefOrderId().equals(orderId))
                 .findFirst().orElse(null);
 
-        existingOrderHistory.setRefOrderStatus(orderStatus);
+        Objects.requireNonNull(existingOrderHistory).setRefOrderStatus(orderStatus);
     }
 
     public void deleteOrderHistory(UUID orderHistoryId) {

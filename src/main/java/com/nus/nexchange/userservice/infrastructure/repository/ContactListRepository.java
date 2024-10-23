@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface ContactListRepository extends JpaRepository<UserContactList,UUID> {
-    public UserContactList findByUserId(UUID userId);
+    UserContactList findByUserId(UUID userId);
 }

@@ -6,8 +6,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SpringDomainEventPublisher implements DomainEventPublisher {
+    private final ApplicationEventPublisher eventPublisher;
+
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    public SpringDomainEventPublisher(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
+    }
 
     @Override
     public void publish(Object event) {

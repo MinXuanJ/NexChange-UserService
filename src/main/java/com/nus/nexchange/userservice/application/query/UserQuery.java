@@ -9,16 +9,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserQuery implements IUserQuery {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public UserQuery(UserRepository userRepository, ModelMapper modelMapper) {
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public List<UserDTO> getAllUsers() {
@@ -32,11 +35,10 @@ public class UserQuery implements IUserQuery {
     @Override
     public UserDTO getUserById(UUID id) {
         UserIdentity user = userRepository.findById(id).orElse(null);
-        if(user == null) {
+        if (user == null) {
             throw new IllegalArgumentException("User not found");
         }
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
-        return userDTO;
+        return modelMapper.map(user, UserDTO.class);
     }
 }

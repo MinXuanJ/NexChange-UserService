@@ -13,11 +13,16 @@ import java.util.UUID;
 
 @Service
 public class OrderHistoryListCommand implements IOrderHistoryListCommand {
-    @Autowired
-    private OrderHistoryListRepository orderHistoryListRepository;
+    
+    private final OrderHistoryListRepository orderHistoryListRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public OrderHistoryListCommand(OrderHistoryListRepository orderHistoryListRepository, ModelMapper modelMapper) {
+        this.orderHistoryListRepository = orderHistoryListRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public void addOrderHistory(OrderHistoryDTO orderHistoryDTO) {
@@ -33,19 +38,19 @@ public class OrderHistoryListCommand implements IOrderHistoryListCommand {
         orderHistoryListRepository.save(userOrderHistoryList);
     }
 
-    @Override
-    public void updateOrderHistory(OrderHistoryDTO orderHistoryDTO) {
-        UserOrderHistory userOrderHistory = modelMapper.map(orderHistoryDTO, UserOrderHistory.class);
-        UserOrderHistoryList userOrderHistoryList = orderHistoryListRepository.findByUserId(orderHistoryDTO.getUserId());
-
-        if (userOrderHistoryList == null) {
-            throw new IllegalArgumentException("Order history list not found");
-        }
-
-        userOrderHistoryList.updateUserOrderHistory(userOrderHistory);
-
-        orderHistoryListRepository.save(userOrderHistoryList);
-    }
+//    @Override
+//    public void updateOrderHistory(OrderHistoryDTO orderHistoryDTO) {
+//        UserOrderHistory userOrderHistory = modelMapper.map(orderHistoryDTO, UserOrderHistory.class);
+//        UserOrderHistoryList userOrderHistoryList = orderHistoryListRepository.findByUserId(orderHistoryDTO.getUserId());
+//
+//        if (userOrderHistoryList == null) {
+//            throw new IllegalArgumentException("Order history list not found");
+//        }
+//
+//        userOrderHistoryList.updateUserOrderHistory(userOrderHistory);
+//
+//        orderHistoryListRepository.save(userOrderHistoryList);
+//    }
 
     @Override
     public void updateOrderHistoryStatus(UUID userId, UUID orderId, OrderStatus orderStatus) {

@@ -4,30 +4,30 @@ import com.nus.nexchange.userservice.api.dto.UserDTO;
 import com.nus.nexchange.userservice.application.command.UserCommand;
 import com.nus.nexchange.userservice.application.query.UserQuery;
 import com.nus.nexchange.userservice.application.security.RedisService;
-import com.nus.nexchange.userservice.domain.aggregate.UserIdentity;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user-system/users")
 public class UserController {
 
-    @Autowired
-    private UserQuery userQuery;
+    private final UserQuery userQuery;
+
+    private final UserCommand userCommand;
+
+    private final RedisService redisService;
 
     @Autowired
-    private UserCommand userCommand;
-
-    @Autowired
-    private RedisService redisService;
+    public UserController(UserQuery userQuery, UserCommand userCommand, RedisService redisService) {
+        this.userQuery = userQuery;
+        this.userCommand = userCommand;
+        this.redisService = redisService;
+    }
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {

@@ -14,11 +14,15 @@ import java.util.UUID;
 @Service
 public class ContactListQuery implements IContactListQuery {
 
-    @Autowired
-    private ContactListRepository contactListRepository;
+    private final ContactListRepository contactListRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public ContactListQuery(ContactListRepository contactListRepository, ModelMapper modelMapper) {
+        this.contactListRepository = contactListRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public ContactListDTO getContactListByUserId(UUID userId) {
