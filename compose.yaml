@@ -12,7 +12,7 @@ services:
     image: wurstmeister/zookeeper:3.4.6
     container_name: zookeeper
     ports:
-        - "2181:2181"
+      - "2181:2181"
   kafka:
     image: wurstmeister/kafka:2.13-2.7.0
     container_name: kafka
@@ -25,6 +25,7 @@ services:
       KAFKA_MESSAGE_MAX_BYTES: 200000000
       KAFKA_REPLICA_FETCH_MAX_BYTES: 200000000
       MAX_REQUEST_SIZE: 200000000
+      COMPRESSION_TYPE: gzip
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
