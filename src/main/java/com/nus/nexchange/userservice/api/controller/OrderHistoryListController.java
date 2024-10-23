@@ -32,7 +32,7 @@ public class OrderHistoryListController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete")
     public ResponseEntity<String> deleteOrderHistoryList(@RequestParam UUID orderHistoryListId, @RequestParam UUID orderHistoryId) {
         try {
             orderHistoryListCommand.removeOrderHistory(orderHistoryId, orderHistoryListId);
