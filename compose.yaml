@@ -8,7 +8,7 @@ services:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_PASSWORD: 111111
     ports:
-      - "3307:3306"
+      - "3306:3306"
     networks:
       - backend
 
@@ -51,8 +51,9 @@ services:
       - JWT_SECRET=jwt_token
     depends_on:
       - mysql-user-service
-
-
+      - kafka-service
+      - zookeeper-service
+      - redis-service
     networks:
       - backend
 

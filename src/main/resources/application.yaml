@@ -1,10 +1,10 @@
 #<<<<<<< HEAD
 spring:
   config:
-    import:
-      - optional:classpath:secret.properties
-      - optional:file:.env
-#    import: "file:./src/main/resources/secret.properties"
+#    import:
+#      - optional:classpath:secret.properties
+#      - optional:file:.env
+    import: "file:./src/main/resources/secret.properties"
 #  import: "optional:classpath:secret.properties"
   datasource:
     url: jdbc:mysql://${DB_HOST:mysql-user-service}:3306/${DB_NAME:NexChangeUserDB}
