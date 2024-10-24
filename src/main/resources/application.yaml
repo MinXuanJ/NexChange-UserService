@@ -1,8 +1,8 @@
 #<<<<<<< HEAD
 spring:
-#  config:
+  config:
 ##    import: "file:./src/main/resources/secret.properties"
-  import: "optional:classpath:secret.properties"
+    import: "optional:classpath:secret.properties"
   datasource:
     url: jdbc:mysql://${DB_HOST:mysql-user-service}:3306/${DB_NAME:NexChangeUserDB}
     username: ${DB_USER:root}
