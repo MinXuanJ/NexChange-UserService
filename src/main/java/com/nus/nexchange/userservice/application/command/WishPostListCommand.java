@@ -50,8 +50,8 @@ public class WishPostListCommand implements IWishPostListCommand {
 //    }
 
     @Override
-    public void removeWishPost(UUID wishPostId, UUID wishPostListId) {
-        UserWishPostList wishPostList = wishPostListRepository.findById(wishPostListId).orElse(null);
+    public void removeWishPost(UUID wishPostId, UUID userId) {
+        UserWishPostList wishPostList = wishPostListRepository.findByUserId(userId);
         if (wishPostList == null) {
             throw new IllegalArgumentException("WishPostList not found");
         }
