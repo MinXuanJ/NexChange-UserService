@@ -26,7 +26,7 @@ public class WishPostListCommand implements IWishPostListCommand {
     @Override
     public void addWishPost(WishPostDTO wishPostDTO) {
         UserWishPost wishPost = modelMapper.map(wishPostDTO, UserWishPost.class);
-        UserWishPostList wishPostList = wishPostListRepository.findById(wishPostDTO.getWishPostListId()).orElse(null);
+        UserWishPostList wishPostList = wishPostListRepository.findByUserId(wishPostDTO.getUserId());
         if (wishPostList == null) {
             throw new IllegalArgumentException("WishPostList not found");
         }
