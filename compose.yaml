@@ -51,8 +51,6 @@ services:
       - JWT_SECRET=jwt_token
     depends_on:
       - mysql-user-service
-
-
     networks:
       - backend
 
