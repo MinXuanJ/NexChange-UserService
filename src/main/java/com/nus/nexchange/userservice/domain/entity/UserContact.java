@@ -14,7 +14,7 @@ import java.util.UUID;
 public class UserContact {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID contactId;
 
     private String contactName;
