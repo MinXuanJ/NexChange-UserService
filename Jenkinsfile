@@ -232,7 +232,7 @@ pipeline {
                         sh "kubectl apply -f mysql-user-service-pvc.yaml"
 
                         // 等待 PVC 准备就绪
-                        sh "kubectl wait --for=condition=bound pvc/mysql-pvc-user --timeout=300s"
+//                        sh "kubectl wait --for=condition=bound pvc/mysql-pvc-user --timeout=300s"
 
                         echo "PV and PVC for MySQL created successfully."
                     }
