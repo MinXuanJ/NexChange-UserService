@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-user-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql-user-service
+          image: mysql:5.7
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: root-password
+            - name: MYSQL_DATABASE
+              value: "NexChangeUserDB"
+            - name: MYSQL_USER
+              value: “root”
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-persistent-storage-user
+              mountPath: /var/lib/mysql  # MySQL 的数据目录
+      volumes:
+            - name: mysql-persistent-storage-user
+              persistentVolumeClaim:
+                claimName: mysql-pvc-user  # 持久卷声明名称
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-user-service
+spec:
+  type: ClusterIP
+  selector:
+    app: mysql
+  ports:
+    - port: 3306

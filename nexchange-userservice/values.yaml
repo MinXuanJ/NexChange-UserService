@@ -1,0 +1,103 @@
+# values.yaml
+
+replicaCount: 3
+
+image:
+  repository: jmx7139/nexchange-userservice
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 8081
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# 应用程序环境变量
+configMap:
+  MYSQL_HOST: "{{ .Release.Name }}-mysql-user-service"
+  MYSQL_PORT: "3306"
+  REDIS_HOST: "{{ .Release.Name }}-redis-master"
+  REDIS_PORT: "6379"
+  KAFKA_BOOTSTRAP_SERVERS: "{{ .Release.Name }}-kafka:9092"
+
+# 敏感信息，建议使用 Kubernetes Secrets 或外部密钥管理系统
+secrets:
+  MYSQL_PASSWORD: "password"  # 在实际使用时填入
+  REDIS_PASSWORD: "password"  # 在实际使用时填入
+
+# 探针配置
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: http
+  initialDelaySeconds: 60
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+# 依赖服务配置
+mysql:
+  enabled: true
+  auth:
+    database: NexChangeUserDB
+    username: user
+    password: "password"
+  primary:
+    persistence:
+      enabled: false
+#      size: 8Gi
+
+redis:
+  enabled: true
+  auth:
+    password: "password"
+  master:
+    persistence:
+      enabled: false
+#      size: 8Gi
+
+kafka:
+  enabled: true
+  replicaCount: 3
+  persistence:
+    size: 8Gi
+  zookeeper:
+    enabled: true
+    persistence:
+      enabled: false
+#      size: 8Gi
+
+
+# Ingress 配置
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: userservice.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  # - secretName: userservice-tls
+  #   hosts:
+  #     - userservice.yourdomain.com

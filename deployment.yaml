@@ -1,0 +1,150 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexchange-userservice
+  labels:
+    app: nexchange-userservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nexchange-userservice
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  template:
+    metadata:
+      labels:
+        app: nexchange-userservice
+    spec:
+      initContainers:
+        - name: wait-for-services
+          image: busybox
+          command: ['sh', '-c', '
+            while ! nc -z $ZOOKEEPER_SERVICE 2181; do echo waiting for zookeeper; sleep 2; done;
+            while ! nc -z $KAFKA_SERVICE 9092; do echo waiting for kafka; sleep 2; done;
+            while ! nc -z $MYSQL_SERVICE 3306; do echo waiting for mysql; sleep 2; done;
+            while ! nc -z $REDIS_SERVICE 6379; do echo waiting for redis; sleep 2; done;
+          ']
+          env:
+            - name: ZOOKEEPER_SERVICE
+              value: "zookeeper-service"
+            - name: KAFKA_SERVICE
+              value: "kafka-service"
+            - name: MYSQL_SERVICE
+              value: "mysql-user-service"
+            - name: REDIS_SERVICE
+              value: "redis-service"
+      containers:
+        - name: nexchange-userservice
+          image: jmx7139/nexchange-userservice:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: userservice-config
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: userservice-config
+                  key: DB_NAME
+            - name: DB_USER
+              value: "root"
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: userservice-config
+                  key: DB_PORT
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: root-password
+            # Redis
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: userservice-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: userservice-config
+                  key: REDIS_PORT
+            # Kafka 配置
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: userservice-config
+                  key: KAFKA_BOOTSTRAP_SERVERS
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: jwt-secret
+          # Enable Probe
+          startupProbe:
+            tcpSocket:              # Use TCP Check to Replace HTTP
+              port: 8081
+            failureThreshold: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 90
+            periodSeconds: 15
+            failureThreshold: 3
+          # 增加资源限制
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+      imagePullSecrets:
+        - name: docker-hub-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexchange-userservice
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8081
+      targetPort: 8081
+      protocol: TCP
+  selector:
+    app: nexchange-userservice
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: nexchange-userservice
+#  annotations:
+#    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+#    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+#    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "HTTP"
+#    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/actuator/health"
+#    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "8081"
+#spec:
+#  type: LoadBalancer
+#  ports:
+#    - name: http
+#      port: 80
+#      targetPort: 8081
+#      protocol: TCP
+#  selector:
+#    app: nexchange-userservice
