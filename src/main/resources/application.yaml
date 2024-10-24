@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://${DB_HOST:mysql-user-service}:3306/${DB_NAME:NexChangeUserDB}
     username: ${DB_USER:user}
-    password: ${MYSQL_PASSWORD}
+    password: ${MYSQL_PASSWORD:111111}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
