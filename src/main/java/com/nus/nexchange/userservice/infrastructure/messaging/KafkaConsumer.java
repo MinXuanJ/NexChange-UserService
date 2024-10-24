@@ -181,6 +181,7 @@ public class KafkaConsumer {
         postHistoryDTO.setRefPostTitle(postDTO.getPostTittle());
         postHistoryDTO.setRefPostShortCutURL(postDTO.getPostShortcutURL());
         postHistoryDTO.setRefPostStatus(postDTO.getPostStatus());
+        postHistoryDTO.setRefPostPrice(postDTO.getPostPrice());
 
         return postHistoryDTO;
     }

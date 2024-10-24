@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @SuppressWarnings("JpaDataSourceORMInspection")
@@ -22,6 +23,8 @@ public class UserPostHistory {
     private String refPostTitle;
 
     private String refPostShortCutURL;
+
+    private BigDecimal refPostPrice;
 
     @Enumerated(EnumType.STRING)
     private PostStatus refPostStatus;
