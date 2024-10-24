@@ -7,13 +7,22 @@ services:
       MYSQL_USER: user
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_PASSWORD: 111111
+    container_name: mysql-user-service
     ports:
       - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
     networks:
       - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   zookeeper-service:
     image: wurstmeister/zookeeper
+    container_name: zookeeper-service
     ports:
       - "2181:2181"
     networks:
@@ -21,6 +30,7 @@ services:
 
   kafka-service:
     image: wurstmeister/kafka
+    container_name: kafka-service
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-service:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-service:9092
@@ -33,11 +43,15 @@ services:
       - backend
 
   redis-service:
-    image: redis:5
+    image: redis:latest
+    container_name: redis-service
     ports:
       - "6379:6379"
+    volumes:
+      - redis-data:/data
     networks:
       - backend
+
 
   nexchange-userservice:
     build: .
@@ -50,12 +64,14 @@ services:
       - KAFKA_SERVERS=kafka-service:9092
       - JWT_SECRET=jwt_token
     depends_on:
-      - mysql-user-service
-      - kafka-service
-      - zookeeper-service
-      - redis-service
+      mysql-user-service:
+        condition: service_healthy
     networks:
       - backend
+
+volumes:
+  mysql-data:
+  redis-data:
 
 networks:
   backend:
