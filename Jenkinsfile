@@ -24,14 +24,14 @@ pipeline {
             }
         }
 
-        stage('Start Docker Services') {
-            steps {
-                script {
-                    sh 'docker-compose up -d'
-                    sh 'docker-compose ps'
-                }
-            }
-        }
+//        stage('Start Docker Services') {
+//            steps {
+//                script {
+//                    sh 'docker-compose up -d'
+//                    sh 'docker-compose ps'
+//                }
+//            }
+//        }
 
 //       stage('Unit Test') {
 //           steps {
