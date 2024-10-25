@@ -120,28 +120,6 @@ pipeline {
 //            }
 //        }
 
-//        stage('Deploy Docker Secret') {
-//            steps {
-//                script {
-//                    def namespace = "default"
-//                    def secretName = "docker-hub-secret"
-//
-//                    // 检查 Secret 是否存在，如果存在则跳过创建
-//                    def secretExists = sh(
-//                            script: "kubectl get secret ${secretName} -n ${namespace} --ignore-not-found",
-//                            returnStatus: true
-//                    ) == 0
-//
-//                    if (!secretExists) {
-//                        echo "Docker Hub Secret 不存在，请手动创建或确认。"
-//                        error("Secret not found. Please create it manually and retry.")
-//                    } else {
-//                        echo "Docker Hub Secret 已存在，跳过创建步骤。"
-//                    }
-//                }
-//            }
-//        }
-
         stage('Verify Kubernetes Access') {
             steps {
                 script {
