@@ -58,10 +58,10 @@ public class KafkaConsumer {
                     .findFirst().orElse(null);
             OrderContactDTO orderContactDTO = modelMapper.map(contactDTO, OrderContactDTO.class);
             orderContactDTO.setUserId(UUIDOrderDTO.getUserId());
-            String orderContactDTOJson = new ObjectMapper().writeValueAsString(orderContactDTO);
-
-//            orderContactDTO.setOrderId(UUIDOrderDTO.getOrderId());
+            orderContactDTO.setOrderId(UUIDOrderDTO.getOrderId());
             orderContactDTO.setSecret(UUIDOrderDTO.getSecret());
+
+            String orderContactDTOJson = new ObjectMapper().writeValueAsString(orderContactDTO);
 
             kafkaProducer.sendMessage("OrderBuyer", orderContactDTOJson);
         } catch (Exception e) {
@@ -76,6 +76,7 @@ public class KafkaConsumer {
             OrderDTO orderDTO = new ObjectMapper().readValue(orderDTOJson, OrderDTO.class);
             OrderHistoryDTO orderHistoryDTO = convertToOrderHistoryDTO(orderDTO);
 
+            System.out.println(orderHistoryDTO.getRefOrderId());
             orderHistoryListCommand.addOrderHistory(orderHistoryDTO);
         } catch (Exception e) {
             logger.error("An error occurred: {}", e.getMessage(), e);
