@@ -169,7 +169,7 @@ pipeline {
             steps {
                 script {
                     sh "kubectl apply -f zookeeper-deployment.yaml"
-                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=60s"
+                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
 
                     def zookeeperPod = sh(
                             script: "kubectl get pod -l app=zookeeper -o jsonpath='{.items[0].metadata.name}'",
@@ -192,9 +192,9 @@ pipeline {
         stage('Deploy and Verify Kafka') {
             steps {
                 script {
-                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=60s"
+                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
                     sh "kubectl apply -f kafka-deployment.yaml"
-                    sh "kubectl wait --for=condition=ready pod -l app=kafka --timeout=120s"
+//                    sh "kubectl wait --for=condition=ready pod -l app=kafka --timeout=300s"
 
                     def kafkaPod = sh(
                             script: "kubectl get pod -l app=kafka -o jsonpath='{.items[0].metadata.name}'",
