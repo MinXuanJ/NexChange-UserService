@@ -112,13 +112,13 @@ pipeline {
         }
 
 
-        stage('Stop Docker Services') {
-            steps {
-                script {
-                    sh 'docker-compose down'
-                }
-            }
-        }
+//        stage('Stop Docker Services') {
+//            steps {
+//                script {
+//                    sh 'docker-compose down'
+//                }
+//            }
+//        }
 
 //        stage('Deploy Docker Secret') {
 //            steps {
