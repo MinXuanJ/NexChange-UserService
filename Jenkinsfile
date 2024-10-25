@@ -267,6 +267,7 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy User Service') {
             steps {
                 script {
@@ -342,51 +343,65 @@ pipeline {
 
                     echo "Testing Service Connections..."
 
-//                    // 测试 MySQL 连接
-//                    sh """
-//                    echo "Testing MySQL Connection with curl:"
-//                    kubectl exec ${userServicePod} -- curl mysql-user-service:3306 || true
-//
-//                    echo "\nTesting MySQL Authentication:"
-//                    kubectl exec \$(kubectl get pod -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
-//                    mysql -uroot -padmin -e 'SELECT 1' || true
-//                    """
+                    // 测试 MySQL 连接
+                    sh """
+                echo "Testing MySQL Connection:"
+                kubectl run mysql-test --rm -i --restart=Never --image=mysql:8.0 -- \
+                mysql -h mysql-user-service -uroot -padmin -e 'SELECT 1' || true
+            """
 
                     // 测试 Redis 连接
                     sh """
-                    echo "\nTesting Redis Connection with curl:"
-                    kubectl exec ${userServicePod} -- curl redis-service:6379 || true
-                    
-                    echo "\nTesting Redis Functionality:"
-                    kubectl exec \$(kubectl get pod -l app=redis -o jsonpath='{.items[0].metadata.name}') -- \
-                    redis-cli ping || true
-                    """
+                echo "Testing Redis Connection:"
+                kubectl run redis-test --rm -i --restart=Never --image=redis -- \
+                redis-cli -h redis-service ping || true
+            """
 
                     // 测试 Kafka 连接
                     sh """
-                    echo "\nTesting Kafka Connection with curl:"
-                    kubectl exec ${userServicePod} -- curl kafka-service:9092 || true
-                    
-                    echo "\nTesting Kafka Topics:"
-                    kubectl exec \$(kubectl get pod -l app=kafka -o jsonpath='{.items[0].metadata.name}') -- \
-                    kafka-topics.sh --bootstrap-server localhost:9092 --list || true
-                    """
+                echo "Testing Kafka Connection:"
+                kubectl run kafka-test --rm -i --restart=Never --image=confluentinc/cp-kafka:latest -- \
+                kafka-topics --bootstrap-server kafka-service:9092 --list || true
+            """
                 }
             }
         }
 
-
         stage('Verify User Service Deployment') {
             steps {
                 script {
-                    def userServicePods = sh(script: "kubectl get pods -l app=nexchange-userservice -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
-                    echo "User Service pods status: ${userServicePods}"
+                    // 等待 Pod 就绪
+                    sh """
+                kubectl wait --for=condition=ready pod -l app=nexchange-userservice --timeout=300s || true
+            """
 
-                    def userServiceDetails = sh(script: "kubectl describe deployment nexchange-userservice", returnStdout: true).trim()
-                    echo "User Service Deployment Details:\n${userServiceDetails}"
+                    // 获取详细状态
+                    def podStatus = sh(
+                            script: '''
+                    echo "Pod Status:"
+                    kubectl get pods -l app=nexchange-userservice -o wide
+                    
+                    echo "\nPod Logs:"
+                    kubectl logs -l app=nexchange-userservice --tail=50 --all-containers
+                    
+                    echo "\nPod Events:"
+                    kubectl get events --sort-by=.metadata.creationTimestamp | grep userservice
+                    
+                    echo "\nPod Description:"
+                    kubectl describe pods -l app=nexchange-userservice
+                ''',
+                            returnStdout: true
+                    ).trim()
 
-                    def userServiceLogs = sh(script: "kubectl logs -l app=nexchange-userservice --tail=50", returnStdout: true).trim()
-                    echo "User Service Logs (last 50 lines):\n${userServiceLogs}"
+                    echo "Deployment Status:\n${podStatus}"
+
+                    // 检查初始化容器状态
+                    def initContainerStatus = sh(
+                            script: "kubectl logs -l app=nexchange-userservice -c wait-for-services || true",
+                            returnStdout: true
+                    ).trim()
+
+                    echo "Init Container Logs:\n${initContainerStatus}"
                 }
             }
         }
