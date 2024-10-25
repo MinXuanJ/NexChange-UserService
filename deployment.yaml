@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nexchange-userservice
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: nexchange-userservice
