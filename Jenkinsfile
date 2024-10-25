@@ -342,15 +342,15 @@ pipeline {
 
                     echo "Testing Service Connections..."
 
-                    // 测试 MySQL 连接
-                    sh """
-                    echo "Testing MySQL Connection with curl:"
-                    kubectl exec ${userServicePod} -- curl mysql-user-service:3306 || true
-                    
-                    echo "\nTesting MySQL Authentication:"
-                    kubectl exec \$(kubectl get pod -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
-                    mysql -uroot -padmin -e 'SELECT 1' || true
-                    """
+//                    // 测试 MySQL 连接
+//                    sh """
+//                    echo "Testing MySQL Connection with curl:"
+//                    kubectl exec ${userServicePod} -- curl mysql-user-service:3306 || true
+//
+//                    echo "\nTesting MySQL Authentication:"
+//                    kubectl exec \$(kubectl get pod -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
+//                    mysql -uroot -padmin -e 'SELECT 1' || true
+//                    """
 
                     // 测试 Redis 连接
                     sh """
