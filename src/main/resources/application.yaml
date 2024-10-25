@@ -8,8 +8,8 @@ spring:
 #  import: "optional:classpath:secret.properties"
   datasource:
     url: jdbc:mysql://${DB_HOST:mysql-user-service}:3306/${DB_NAME:NexChangeUserDB}
-    username: ${DB_USER}
-    password: ${MYSQL_PASSWORD}
+    username: ${DB_USER:root}
+    password: ${MYSQL_PASSWORD:admin}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
