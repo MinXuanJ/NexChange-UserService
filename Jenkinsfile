@@ -146,8 +146,42 @@ pipeline {
         stage('Deploy and Verify Zookeeper') {
             steps {
                 script {
-                    sh "kubectl apply -f zookeeper-storage.yaml"
-                    sh "kubectl wait --for=condition=Bound pvc/zookeeper-pvc --timeout=300s"
+                    def pvcExists = sh(
+                            script: "kubectl get pvc zookeeper-pvc -o name 2>/dev/null || true",
+                            returnStdout: true
+                    ).trim()
+
+                    if (!pvcExists) {
+                        echo "Creating new PVC for ZooKeeper..."
+                        sh "kubectl apply -f zookeeper-storage.yaml"
+
+                        // 等待 PVC 绑定完成
+                        def bound = false
+                        def attempts = 0
+                        def maxAttempts = 10
+
+                        while (!bound && attempts < maxAttempts) {
+                            def status = sh(
+                                    script: "kubectl get pvc zookeeper-pvc -o jsonpath='{.status.phase}'",
+                                    returnStdout: true
+                            ).trim()
+
+                            if (status == "Bound") {
+                                bound = true
+                                echo "PVC successfully bound"
+                            } else {
+                                attempts++
+                                echo "Waiting for PVC to be bound (attempt ${attempts}/${maxAttempts})..."
+                                sleep 30 // 等待30秒
+                            }
+                        }
+
+                        if (!bound) {
+                            error "PVC failed to bind after ${maxAttempts} attempts"
+                        }
+                    } else {
+                        echo "ZooKeeper PVC already exists, skipping creation"
+                    }
 
                     sh "kubectl apply -f zookeeper-deployment.yaml"
                     sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
@@ -173,8 +207,42 @@ pipeline {
         stage('Deploy and Verify Kafka') {
             steps {
                 script {
-                    sh "kubectl apply -f kafka-storage.yaml"
-                    sh "kubectl wait --for=condition=Bound pvc/kafka-pvc --timeout=60s"
+                    def kafkaPvcExists = sh(
+                            script: "kubectl get pvc kafka-pvc -o name 2>/dev/null || true",
+                            returnStdout: true
+                    ).trim()
+
+                    if (!kafkaPvcExists) {
+                        echo "Creating new PVC for Kafka..."
+                        sh "kubectl apply -f kafka-storage.yaml"
+
+                        // 等待 PVC 绑定
+                        def bound = false
+                        def attempts = 0
+                        def maxAttempts = 10
+
+                        while (!bound && attempts < maxAttempts) {
+                            def status = sh(
+                                    script: "kubectl get pvc kafka-pvc -o jsonpath='{.status.phase}'",
+                                    returnStdout: true
+                            ).trim()
+
+                            if (status == "Bound") {
+                                bound = true
+                                echo "Kafka PVC successfully bound"
+                            } else {
+                                attempts++
+                                echo "Waiting for Kafka PVC to be bound (attempt ${attempts}/${maxAttempts})..."
+                                sleep 30
+                            }
+                        }
+
+                        if (!bound) {
+                            error "Kafka PVC failed to bind after ${maxAttempts} attempts"
+                        }
+                    } else {
+                        echo "Kafka PVC already exists, skipping creation"
+                    }
 
 
                     sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
@@ -430,6 +498,13 @@ pipeline {
                     ).trim()
 
                     echo "Init Container Logs:\n${initContainerStatus}"
+                }
+            }
+        }
+        stage('Analysis Pods and Logs') {
+            steps {
+                script {
+                    sh "./check-all-services.sh"
                 }
             }
         }
