@@ -4,10 +4,13 @@ metadata:
   name: zookeeper-pv
 spec:
   capacity:
-    storage: 5Gi
+    storage: 5Gi  # 存储大小
   accessModes:
     - ReadWriteOnce
-  storageClassName: gp2
+  persistentVolumeReclaimPolicy: Retain  # 保留策略
+  storageClassName: standard  # 存储类名称
+  hostPath:
+    path: "/mnt/data/zookeeper"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -19,4 +22,4 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: gp2
+  storageClassName: standard
