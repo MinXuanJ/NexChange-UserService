@@ -187,7 +187,7 @@ pipeline {
                     }
 
                     sh "kubectl apply -f zookeeper-deployment.yaml"
-                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
+//                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
 
                     def zookeeperPod = sh(
                             script: "kubectl get pod -l app=zookeeper -o jsonpath='{.items[0].metadata.name}'",
