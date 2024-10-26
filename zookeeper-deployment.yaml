@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zookeeper
+  labels:
+    app: zookeeper
 spec:
   replicas: 1
   selector:
@@ -12,13 +14,24 @@ spec:
       labels:
         app: zookeeper
     spec:
+      initContainers:
+        - name: init-dirs
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /mnt/data/zookeeper/data /mnt/data/zookeeper/datalog /mnt/data/zookeeper/logs
+              chown -R 1000:1000 /mnt/data/zookeeper
+          volumeMounts:
+            - name: zookeeper-data
+              mountPath: /mnt/data/zookeeper
       containers:
         - name: zookeeper
           image: wurstmeister/zookeeper:latest
           ports:
             - containerPort: 2181
           env:
-            # 添加环境变量来重置状态
             - name: ZOO_STANDALONE_ENABLED
               value: "true"
             - name: ZOO_4LW_COMMANDS_WHITELIST
@@ -27,21 +40,17 @@ spec:
               value: "1"
             - name: ZOO_AUTOPURGE_SNAPRETAINCOUNT
               value: "3"
+            - name: ZOO_DATA_DIR
+              value: "/mnt/data/zookeeper/data"
+            - name: ZOO_DATALOG_DIR
+              value: "/mnt/data/zookeeper/datalog"
           volumeMounts:
-          - name: zookeeper-data
-            mountPath: /var/lib/zookeeper/data
-            subPath: data
-          - name: zookeeper-data
-            mountPath: /var/lib/zookeeper/datalog
-            subPath: datalog
-          - name: zookeeper-data
-            mountPath: /var/lib/zookeeper/logs
-            subPath: logs
-      volumes:
             - name: zookeeper-data
-              persistentVolumeClaim:
-                claimName: zookeeper-pvc
-
+              mountPath: /mnt/data/zookeeper
+      volumes:
+        - name: zookeeper-data
+          persistentVolumeClaim:
+            claimName: zookeeper-pvc
 ---
 apiVersion: v1
 kind: Service
