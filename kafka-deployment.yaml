@@ -16,6 +16,9 @@ spec:
         - name: wait-for-zookeeper
           image: busybox
           command: ['sh', '-c', 'until nc -z zookeeper-service 2181; do echo waiting for zookeeper; sleep 2; done;']
+        - name: create-kafka-data
+          image: busybox
+          command: [ 'sh', '-c', 'mkdir -p /mnt/data/kafka/kafka-logs' ]
       containers:
         - name: kafka
           image: wurstmeister/kafka:2.13-2.8.1
