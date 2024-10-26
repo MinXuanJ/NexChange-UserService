@@ -146,6 +146,9 @@ pipeline {
         stage('Deploy and Verify Zookeeper') {
             steps {
                 script {
+                    sh "kubectl apply -f zookeeper-storage.yaml"
+                    sh "kubectl wait --for=condition=Bound pvc/zookeeper-pvc --timeout=300s"
+
                     sh "kubectl apply -f zookeeper-deployment.yaml"
                     sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
 
@@ -170,6 +173,10 @@ pipeline {
         stage('Deploy and Verify Kafka') {
             steps {
                 script {
+                    sh "kubectl apply -f kafka-storage.yaml"
+                    sh "kubectl wait --for=condition=Bound pvc/kafka-pvc --timeout=60s"
+
+
                     sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
                     sh "kubectl apply -f kafka-deployment.yaml"
 //                    sh "kubectl wait --for=condition=ready pod -l app=kafka --timeout=300s"
@@ -188,6 +195,27 @@ pipeline {
                 kubectl exec ${kafkaPod} -- bash -c \
                 'kafka-topics.sh --list --bootstrap-server localhost:9092'
             """
+                }
+            }
+        }
+        stage('Verify Message Queue') {
+            steps {
+                script {
+                    sh '''
+                echo "Verifying ZooKeeper status..."
+                kubectl get pods -l app=zookeeper
+                
+                echo "Verifying Kafka status..."
+                kubectl get pods -l app=kafka
+                
+                echo "Checking Kafka topics..."
+                KAFKA_POD=$(kubectl get pod -l app=kafka -o jsonpath='{.items[0].metadata.name}')
+                kubectl exec $KAFKA_POD -- kafka-topics.sh --list --bootstrap-server localhost:9092
+                
+                echo "Checking PVC status..."
+                kubectl get pvc zookeeper-pvc
+                kubectl get pvc kafka-pvc
+            '''
                 }
             }
         }
