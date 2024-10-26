@@ -250,9 +250,9 @@ pipeline {
                         echo "Kafka PVC already exists, skipping creation"
                     }
 
-                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
+//                    sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
                     sh "kubectl apply -f kafka-deployment.yaml"
-                    sh "kubectl wait --for=condition=ready pod -l app=kafka --timeout=300s"
+//                    sh "kubectl wait --for=condition=ready pod -l app=kafka --timeout=300s"
 
                     def kafkaPod = sh(
                             script: "kubectl get pod -l app=kafka -o jsonpath='{.items[0].metadata.name}'",

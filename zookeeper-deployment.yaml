@@ -28,15 +28,15 @@ spec:
             - name: ZOO_AUTOPURGE_SNAPRETAINCOUNT
               value: "3"
           volumeMounts:
-            - name: zookeeper-data
-              mountPath: /data
-              subPath: data
-            - name: zookeeper-data
-              mountPath: /datalog
-              subPath: datalog
-            - name: zookeeper-data
-              mountPath: /logs
-              subPath: logs
+          - name: zookeeper-data
+            mountPath: /var/lib/zookeeper/data
+            subPath: data
+          - name: zookeeper-data
+            mountPath: /var/lib/zookeeper/datalog
+            subPath: datalog
+          - name: zookeeper-data
+            mountPath: /var/lib/zookeeper/logs
+            subPath: logs
       volumes:
             - name: zookeeper-data
               persistentVolumeClaim:
