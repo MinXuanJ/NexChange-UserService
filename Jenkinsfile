@@ -169,11 +169,14 @@ pipeline {
                             if (status == "Bound") {
                                 bound = true
                                 echo "PVC successfully bound"
-                            } else {
-                                attempts++
-                                echo "Waiting for PVC to be bound (attempt ${attempts}/${maxAttempts})..."
-                                sleep 30 // 等待30秒
+                            } else if (status == "Pending") {
+                                echo "PVC is still Pending, checking events for more details"
+                                sh "kubectl describe pvc zookeeper-pvc"
                             }
+
+                            attempts++
+                            echo "Waiting for PVC to be bound (attempt ${attempts}/${maxAttempts})..."
+                            sleep 30 // 等待30秒
                         }
 
                         if (!bound) {
@@ -230,11 +233,14 @@ pipeline {
                             if (status == "Bound") {
                                 bound = true
                                 echo "Kafka PVC successfully bound"
-                            } else {
-                                attempts++
-                                echo "Waiting for Kafka PVC to be bound (attempt ${attempts}/${maxAttempts})..."
-                                sleep 30
+                            } else if (status == "Pending") {
+                                echo "PVC is still Pending, checking events for more details"
+                                sh "kubectl describe pvc kafka-pvc"
                             }
+
+                            attempts++
+                            echo "Waiting for Kafka PVC to be bound (attempt ${attempts}/${maxAttempts})..."
+                            sleep 30
                         }
 
                         if (!bound) {
@@ -244,10 +250,9 @@ pipeline {
                         echo "Kafka PVC already exists, skipping creation"
                     }
 
-
                     sh "kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s"
                     sh "kubectl apply -f kafka-deployment.yaml"
-//                    sh "kubectl wait --for=condition=ready pod -l app=kafka --timeout=300s"
+                    sh "kubectl wait --for=condition=ready pod -l app=kafka --timeout=300s"
 
                     def kafkaPod = sh(
                             script: "kubectl get pod -l app=kafka -o jsonpath='{.items[0].metadata.name}'",
@@ -259,13 +264,19 @@ pipeline {
                     sh "kubectl logs ${kafkaPod} --tail=20"
 
                     // 测试 Kafka 功能
-                    sh """
-                kubectl exec ${kafkaPod} -- bash -c \
-                'kafka-topics.sh --list --bootstrap-server localhost:9092'
-            """
+                    def kafkaTopics = sh(
+                            script: """
+                    kubectl exec ${kafkaPod} -- bash -c \
+                    'kafka-topics.sh --list --bootstrap-server localhost:9092'
+                """,
+                            returnStdout: true
+                    ).trim()
+
+                    echo "Kafka topics: ${kafkaTopics}"
                 }
             }
         }
+
         stage('Verify Message Queue') {
             steps {
                 script {
