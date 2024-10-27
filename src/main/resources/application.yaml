@@ -1,6 +1,6 @@
-
-#spring:
-#  config:
+---
+spring:
+  config:
 ##    import:
 ##      - optional:classpath:secret.properties
 ##      - optional:file:.env
@@ -33,11 +33,13 @@
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+---
 jwt:
   secret: ${JWT_SECRET}
+---
 server:
   port: 8081
-
+---
 logging:
   level:
     root: WARN
@@ -48,6 +50,7 @@ logging:
 #    org.springframework.boot.context.config: DEBUG
 #    com.zaxxer.hikari: DEBUG
 #    org.hibernate.SQL: DEBUG
+---
 management:
   endpoints:
     web:
