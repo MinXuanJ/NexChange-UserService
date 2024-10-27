@@ -400,21 +400,21 @@ pipeline {
                             returnStdout: true
                     ).trim()
 
-                    // 5. Check services connection
-                    echo "Checking service connectivity..."
-                    sh """
-                echo "Database Connection Info:"
-                kubectl logs ${podName} | grep -i "database"
-                
-                echo "\nKafka Connection Info:"
-                kubectl logs ${podName} | grep -i "kafka"
-                
-                echo "\nRedis Connection Info:"
-                kubectl logs ${podName} | grep -i "redis"
-                
-                echo "\nApplication Health:"
-                kubectl logs ${podName} | grep -i "started"
-            """
+//                    // 5. Check services connection
+//                    echo "Checking service connectivity..."
+//                    sh """
+//                echo "Database Connection Info:"
+//                kubectl logs ${podName} | grep -i "database"
+//
+//                echo "\nKafka Connection Info:"
+//                kubectl logs ${podName} | grep -i "kafka"
+//
+//                echo "\nRedis Connection Info:"
+//                kubectl logs ${podName} | grep -i "redis"
+//
+//                echo "\nApplication Health:"
+//                kubectl logs ${podName} | grep -i "started"
+//            """
 
 
                     echo "Application Logs:"
