@@ -6,10 +6,10 @@ services:
       MYSQL_DATABASE: NexChangeUserDB
       MYSQL_USER: user
       MYSQL_ROOT_PASSWORD: admin
-      MYSQL_PASSWORD: 111111
+      MYSQL_PASSWORD: password
     container_name: mysql-user-service
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -59,7 +59,7 @@ services:
       - DB_HOST=mysql-user-service
       - DB_NAME=NexChangeUserDB
       - DB_USER=user
-      - MYSQL_PASSWORD=111111
+      - MYSQL_PASSWORD=password
       - REDIS_HOST=redis-service
       - KAFKA_SERVERS=kafka-service:9092
       - JWT_SECRET=jwt_token
