@@ -12,6 +12,7 @@ spec:
       labels:
         app: kafka
     spec:
+      terminationGracePeriodSeconds: 60
       initContainers:
         - name: wait-for-zookeeper
           image: busybox
@@ -79,6 +80,8 @@ spec:
             - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
               value: "true"
             - name: KAFKA_DELETE_TOPIC_ENABLE
+              value: "true"
+            - name: KAFKA_AUTO_LEADER_REBALANCE_ENABLE
               value: "true"
             # 日志配置
             - name: KAFKA_LOG_RETENTION_HOURS
