@@ -10,7 +10,7 @@ spec:
     matchLabels:
       app: nexchange-userservice
   strategy:
-    type: RollingUpdate
+    type: Recreate
     rollingUpdate:
       maxUnavailable: 25%
       maxSurge: 25%
