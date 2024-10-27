@@ -1,6 +1,6 @@
 ---
 spring:
-  config:
+#  config:
 ##    import:
 ##      - optional:classpath:secret.properties
 ##      - optional:file:.env
