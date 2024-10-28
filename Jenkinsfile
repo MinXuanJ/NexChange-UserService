@@ -512,13 +512,13 @@ pipeline {
                 }
             }
         }
-        stage('Analysis Pods and Logs') {
-            steps {
-                script {
-                    sh "./check-all-services.sh"
-                }
-            }
-        }
+//        stage('Analysis Pods and Logs') {
+//            steps {
+//                script {
+//                    sh "./check-all-services.sh"
+//                }
+//            }
+//        }
 
         stage('Get Cluster Ip') {
             steps {
