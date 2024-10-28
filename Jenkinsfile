@@ -33,24 +33,6 @@ pipeline {
 //            }
 //        }
 
-//       stage('Unit Test') {
-//           steps {
-//               script {
-//                   sh "docker-compose ps"
-//                   sh "mvn test"
-//               }
-//               junit '**/target/surefire-reports/*.xml'
-//            }
-//       }
-
-        stage('Build and Package') {
-            steps {
-                script {
-                    sh "mvn clean package -DskipTests"
-                }
-            }
-        }
-
         stage('Static Code Analysis') {
             steps {
                 script {
@@ -66,6 +48,25 @@ pipeline {
                     """
                         }
                     }
+                }
+            }
+        }
+
+       stage('Unit Test') {
+           steps {
+               script {
+//                   sh "docker-compose ps"
+//                   sh "mvn test"
+                   sh "mvn clean package -DskipTests"
+               }
+//               junit '**/target/surefire-reports/*.xml'
+            }
+       }
+
+        stage('Build and Package') {
+            steps {
+                script {
+                    sh "mvn clean package -DskipTests"
                 }
             }
         }
@@ -99,6 +100,7 @@ pipeline {
                 }
             }
         }
+
         stage('Cleanup Docker Images') {
             steps {
                 script {
@@ -370,7 +372,6 @@ pipeline {
 
                     echo "Database Services Status:\n${mysqlInfo}\n${redisInfo}"
 
-
                 }
             }
         }
@@ -425,16 +426,6 @@ pipeline {
                 echo "\nApplication Status:"
                 kubectl exec ${podName} -- curl -s http://localhost:8081/actuator/health || true
             """
-
-                    // 7. 如果是 LoadBalancer，输出访问信息
-                    echo "Access Information:"
-                    sh """
-                if kubectl get service nexchange-userservice -o jsonpath='{.spec.type}' | grep -q 'LoadBalancer'; then
-                    echo "LoadBalancer URL:"
-                    kubectl get service nexchange-userservice -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
-                fi
-            """
-
                 }
             }
         }
@@ -525,7 +516,6 @@ pipeline {
                 }
             }
         }
-
 
     } 
 } 
