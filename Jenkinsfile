@@ -491,9 +491,6 @@ pipeline {
                     echo "\nPod Logs:"
                     kubectl logs -l app=nexchange-userservice --tail=50 --all-containers
                     
-                    echo "\nPod Events:"
-                    kubectl get events --sort-by=.metadata.creationTimestamp | grep userservice
-                    
                     echo "\nPod Description:"
                     kubectl describe pods -l app=nexchange-userservice
                 ''',
