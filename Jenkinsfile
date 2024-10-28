@@ -18,11 +18,11 @@ pipeline {
     }
 
     stages {
-        stage('Checkout'){
-            steps{
-                checkout scm
-            }
-        }
+//        stage('Checkout'){
+//            steps{
+//                checkout scm
+//            }
+//        }
 
 //        stage('Start Docker Services') {
 //            steps {
@@ -32,22 +32,10 @@ pipeline {
 //                }
 //            }
 //        }
-
-        stage('Static Code Analysis') {
+        stage('Build and Package') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'NEXCHANGE_SONARCLOUD_USERSERVICE_TOKEN', variable: 'SONAR_LOGIN')]) {
-                        withSonarQubeEnv('SonarQube') {
-                            sh """
-                    mvn sonar:sonar \
-                    -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-                    -Dsonar.organization=$SONAR_ORGANIZATION_KEY \
-                    -Dsonar.host.url=$SONAR_HOST_URL \
-                    -Dsonar.login=$SONAR_LOGIN  \
-                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-                    """
-                        }
-                    }
+                    sh "mvn clean package -DskipTests"
                 }
             }
         }
@@ -64,10 +52,21 @@ pipeline {
             }
        }
 
-        stage('Build and Package') {
+        stage('Static Code Analysis') {
             steps {
                 script {
-                    sh "mvn clean package -DskipTests"
+                    withCredentials([string(credentialsId: 'NEXCHANGE_SONARCLOUD_USERSERVICE_TOKEN', variable: 'SONAR_LOGIN')]) {
+                        withSonarQubeEnv('SonarQube') {
+                            sh """
+                    mvn sonar:sonar \
+                    -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                    -Dsonar.organization=$SONAR_ORGANIZATION_KEY \
+                    -Dsonar.host.url=$SONAR_HOST_URL \
+                    -Dsonar.login=$SONAR_LOGIN  \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                    """
+                        }
+                    }
                 }
             }
         }
