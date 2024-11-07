@@ -41,16 +41,16 @@ pipeline {
         }
 
 
-       stage('Unit Test') {
-           steps {
-               script {
+        stage('Unit Test') {
+            steps {
+                script {
 //                   sh "docker-compose ps"
 //                   sh "mvn test"
-                   sh "mvn clean package -DskipTests"
-               }
+                    sh "mvn clean package -DskipTests"
+                }
 //               junit '**/target/surefire-reports/*.xml'
             }
-       }
+        }
 
         stage('Static Code Analysis') {
             steps {
@@ -86,7 +86,7 @@ pipeline {
                         sh "docker login -u $USERNAME -p $PASSWORD"
                         sh "docker tag $DOCKER_IMAGE $DOCKER_IMAGE:latest"
                         sh "docker push $DOCKER_IMAGE:latest"
-                        sh "docker images" 
+                        sh "docker images"
                     }
                 }
             }
@@ -517,5 +517,5 @@ pipeline {
             }
         }
 
-    } 
-} 
+    }
+}
