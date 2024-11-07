@@ -37,22 +37,27 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: jwt-secret        # 这里是 Secret 的名称
                   key: JWT_SECRET         # 这里是 Secret 中的键
             - name: MYSQL_HOST
-              value: "{{ .Release.Name }}-mysql-user-service"
-            - name: DB_NAME
-              value: "NexChangeUserDB"
-            - name: DB_USER
-              value: "user"
+              value: {{ .Values.configMap.MYSQL_HOST }}
+            - name: MYSQL_PORT
+              value: {{ .Values.configMap.MYSQL_PORT }}
+            - name: REDIS_HOST
+              value: {{ .Values.configMap.REDIS_HOST }}
+            - name: REDIS_PORT
+              value: {{ .Values.configMap.REDIS_PORT }}
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: {{ .Values.configMap.KAFKA_BOOTSTRAP_SERVERS }}
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql-secret
-                  key: password
+                  name: userservice-mysql
+                  key: mysql-password
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -1,5 +1,16 @@
 # values.yaml
+# 应用程序环境变量
+configMap:
+  MYSQL_HOST: "mysql-user-service"
+  MYSQL_PORT: "3306"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  KAFKA_BOOTSTRAP_SERVERS: "userservice-kafka:9092"
 
+secrets:
+  MYSQL_PASSWORD: "password"  # 在实际使用时填入
+
+# service
 replicaCount: 2
 image:
   repository: jmx7139/nexchange-userservice
@@ -22,18 +33,6 @@ resources:
   requests:
     cpu: 250m
     memory: 256Mi
-
-# 应用程序环境变量
-configMap:
-  MYSQL_HOST: "userservice-mysql"
-  MYSQL_PORT: "3306"
-  REDIS_HOST: "userservice-redis-master"
-  REDIS_PORT: "6379"
-  KAFKA_BOOTSTRAP_SERVERS: "userservice-kafka:9092"
-
-# 敏感信息，建议使用 Kubernetes Secrets 或外部密钥管理系统
-secrets:
-  MYSQL_PASSWORD: "password"  # 在实际使用时填入
 
 # 探针配置
 livenessProbe:
@@ -79,15 +78,6 @@ kafka:
   externalZookeeper:
     servers: []
 
-#zookeeper:
-#  enabled: true
-##  replicaCount: 2
-#  persistence:
-#    enabled: false  # 根据需要设置持久化
-
-#kraft:
-#  enabled: false
-
 autoscaling:
   enabled: false  # 如果不需要 HPA，可以设置为 false
   minReplicas: 1
@@ -98,10 +88,11 @@ env:
   - name: JWT_SECRET
     value: "jwt_token"
 
-
-# Ingress 配置
+# Ingress
 ingress:
   enabled: false
+
+
 #  className: "nginx"
 #  annotations:
 #    kubernetes.io/ingress.class: nginx
@@ -115,3 +106,12 @@ ingress:
 #  # - secretName: userservice-tls
 #  #   hosts:
 #  #     - userservice.yourdomain.com
+
+
+#zookeeper:
+#  enabled: true
+##  replicaCount: 2
+#  persistence:
+#    enabled: false  # 根据需要设置持久化
+#kraft:
+#  enabled: false
