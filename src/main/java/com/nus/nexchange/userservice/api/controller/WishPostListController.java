@@ -44,9 +44,9 @@ public class WishPostListController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteWishPost(@RequestParam UUID wishPostListId, @RequestParam UUID wishPostId) {
+    public ResponseEntity<String> deleteWishPost(@RequestParam UUID userId, @RequestParam UUID wishPostId) {
         try {
-            wishPostListCommand.removeWishPost(wishPostId, wishPostListId);
+            wishPostListCommand.removeWishPost(wishPostId, userId);
             return ResponseEntity.ok("Deleted wishpost");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

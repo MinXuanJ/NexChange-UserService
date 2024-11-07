@@ -36,10 +36,10 @@ public class ContactListController {
     }
 
     @PostMapping("/new-contact")
-    public ResponseEntity<String> addContact(@RequestBody ContactDTO contactDTO) {
+    public ResponseEntity<?> addContact(@RequestBody ContactDTO contactDTO) {
         try {
-            contactListCommand.addContact(contactDTO);
-            return ResponseEntity.ok("Added contact");
+            ContactDTO contact = contactListCommand.addContact(contactDTO);
+            return ResponseEntity.ok(contact);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
