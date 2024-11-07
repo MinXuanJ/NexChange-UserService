@@ -37,27 +37,30 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: jwt-secret        # 这里是 Secret 的名称
-                  key: JWT_SECRET         # 这里是 Secret 中的键
             - name: MYSQL_HOST
-              value: {{ .Values.configMap.MYSQL_HOST }}
+              value: {{ .Values.configMap.MYSQL_HOST | quote }}
             - name: MYSQL_PORT
-              value: "{{ .Values.configMap.MYSQL_PORT }}"
+              value: {{ .Values.configMap.MYSQL_PORT | quote }}
+            - name: DB_NAME
+              value: {{ .Values.configMap.DB_NAME | quote }}
+            - name: DB_USER
+              value: {{ .Values.configMap.DB_USER | quote }}
             - name: REDIS_HOST
-              value: {{ .Values.configMap.REDIS_HOST }}
+              value: {{ .Values.configMap.REDIS_HOST | quote }}
             - name: REDIS_PORT
-              value: "{{ .Values.configMap.REDIS_PORT }}"
+              value: {{ .Values.configMap.REDIS_PORT | quote }}
             - name: KAFKA_BOOTSTRAP_SERVERS
-              value: {{ .Values.configMap.KAFKA_BOOTSTRAP_SERVERS }}
+              value: {{ .Values.configMap.KAFKA_BOOTSTRAP_SERVERS | quote }}
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: userservice-mysql
                   key: mysql-password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

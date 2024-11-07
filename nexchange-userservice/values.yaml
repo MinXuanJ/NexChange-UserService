@@ -3,6 +3,8 @@
 configMap:
   MYSQL_HOST: "userservice-mysql-user-service"
   MYSQL_PORT: "3306"
+  DB_NAME: "NexChangeUserDB"
+  DB_USER: "user"
   REDIS_HOST: "userservice-redis-service"
   REDIS_PORT: "6379"
   KAFKA_BOOTSTRAP_SERVERS: "userservice-kafka-service:9092"
