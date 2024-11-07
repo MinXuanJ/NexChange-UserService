@@ -5,7 +5,7 @@ configMap:
   MYSQL_PORT: "3306"
   REDIS_HOST: "redis-service"
   REDIS_PORT: "6379"
-  KAFKA_BOOTSTRAP_SERVERS: "userservice-kafka:9092"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
 
 secrets:
   MYSQL_PASSWORD: "password"  # 在实际使用时填入
@@ -66,6 +66,8 @@ redis:
   nameOverride: "redis-service"
   enabled: true
   replicaCount: 2
+  auth:
+    enabled: false
   master:
     persistence:
       enabled: false
@@ -76,10 +78,15 @@ kafka:
   enabled: true
   kraftMode: true
   replicaCount: 2
+  deleteTopicEnable: true
   zookeeper:
     enabled: false
   externalZookeeper:
     servers: []
+  extraConfig: |
+    auto.create.topics.enable=true
+    default.replication.factor=1
+    num.partitions=3
 
 autoscaling:
   enabled: false  # 如果不需要 HPA，可以设置为 false
@@ -117,4 +124,4 @@ ingress:
 #  persistence:
 #    enabled: false  # 根据需要设置持久化
 #kraft:
-#  enabled: false
+#  enabled: false帮我修改
