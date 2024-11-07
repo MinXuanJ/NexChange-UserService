@@ -75,6 +75,7 @@ redis:
 
 # Kafka configuration with internal Zookeeper
 kafka:
+  nameOverride: "kafka-service"
   enabled: true
   kraftMode: true
   replicaCount: 2
