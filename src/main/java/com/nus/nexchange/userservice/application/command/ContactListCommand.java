@@ -4,6 +4,8 @@ import com.nus.nexchange.userservice.api.dto.Contacts.ContactDTO;
 import com.nus.nexchange.userservice.domain.aggregate.UserContactList;
 import com.nus.nexchange.userservice.domain.entity.UserContact;
 import com.nus.nexchange.userservice.infrastructure.repository.ContactListRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,15 +19,20 @@ public class ContactListCommand implements IContactListCommand {
 
     private final ModelMapper modelMapper;
 
+    private final EntityManager entityManager;
+
     @Autowired
-    public ContactListCommand(ContactListRepository contactListRepository, ModelMapper modelMapper) {
+    public ContactListCommand(ContactListRepository contactListRepository, ModelMapper modelMapper, EntityManager entityManager) {
         this.contactListRepository = contactListRepository;
         this.modelMapper = modelMapper;
+        this.entityManager = entityManager;
     }
 
     @Override
-    public void addContact(ContactDTO contactDTO) {
+    @Transactional
+    public ContactDTO addContact(ContactDTO contactDTO) {
         UserContact userContact = modelMapper.map(contactDTO, UserContact.class);
+        userContact.setContactId(UUID.randomUUID());
         UserContactList userContactList = contactListRepository.findById(contactDTO.getContactListId()).orElse(null);
 
         if (userContactList == null) {
@@ -35,6 +42,8 @@ public class ContactListCommand implements IContactListCommand {
         userContactList.addContact(userContact);
 
         contactListRepository.save(userContactList);
+
+        return modelMapper.map(userContact, ContactDTO.class);
     }
 
     @Override

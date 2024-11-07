@@ -9,5 +9,5 @@ public interface IWishPostListCommand {
 
 //    public void updateWishPost(WishPostDTO wishPostDTO);
 
-    void removeWishPost(UUID wishPostId, UUID wishPostListId);
+    void removeWishPost(UUID wishPostId, UUID userId);
 }

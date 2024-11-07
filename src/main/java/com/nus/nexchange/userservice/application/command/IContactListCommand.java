@@ -5,7 +5,7 @@ import com.nus.nexchange.userservice.api.dto.Contacts.ContactDTO;
 import java.util.UUID;
 
 public interface IContactListCommand {
-    void addContact(ContactDTO contactDTO);
+    ContactDTO addContact(ContactDTO contactDTO);
 
     void updateContact(ContactDTO contactDTO);
 
