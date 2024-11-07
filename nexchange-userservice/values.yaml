@@ -95,6 +95,11 @@ autoscaling:
   maxReplicas: 3
   targetCPUUtilizationPercentage: 80
 
+env:
+  - name: JWT_SECRET
+    value: "jwt_token"
+
+
 # Ingress 配置
 ingress:
   enabled: false

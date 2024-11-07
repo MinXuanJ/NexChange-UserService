@@ -36,6 +36,12 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret        # 这里是 Secret 的名称
+                  key: JWT_SECRET         # 这里是 Secret 中的键
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
