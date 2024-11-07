@@ -1,7 +1,6 @@
 # values.yaml
 
 replicaCount: 2
-
 image:
   repository: jmx7139/nexchange-userservice
   tag: "latest"
@@ -74,10 +73,10 @@ redis:
 #      size: 8Gi
 
 # Kafka configuration with internal Zookeeper
-kafka:kafka:
+kafka:
   enabled: true
   kraftMode: false  # Kraft 模式关闭
-  replicaCount: 3
+  replicaCount: 2
   zookeeper:
     enabled: true  # 确保 Zookeeper 被启用
   externalZookeeper:
@@ -85,7 +84,7 @@ kafka:kafka:
 
 zookeeper:
   enabled: true
-  replicaCount: 2
+#  replicaCount: 2
   persistence:
     enabled: false  # 根据需要设置持久化
 

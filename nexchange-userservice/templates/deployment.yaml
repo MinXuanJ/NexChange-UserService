@@ -42,6 +42,17 @@ spec:
                 secretKeyRef:
                   name: jwt-secret        # 这里是 Secret 的名称
                   key: JWT_SECRET         # 这里是 Secret 中的键
+            - name: MYSQL_HOST
+              value: "{{ .Release.Name }}-mysql-user-service"
+            - name: DB_NAME
+              value: "NexChangeUserDB"
+            - name: DB_USER
+              value: "user"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
