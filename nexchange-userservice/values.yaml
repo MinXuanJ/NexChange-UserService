@@ -25,16 +25,15 @@ resources:
 
 # 应用程序环境变量
 configMap:
-  MYSQL_HOST: "{{ .Release.Name }}-mysql-user-service"
+  MYSQL_HOST: "userservice-mysql"
   MYSQL_PORT: "3306"
-  REDIS_HOST: "{{ .Release.Name }}-redis-master"
+  REDIS_HOST: "userservice-redis-master"
   REDIS_PORT: "6379"
-  KAFKA_BOOTSTRAP_SERVERS: "{{ .Release.Name }}-kafka:9092"
+  KAFKA_BOOTSTRAP_SERVERS: "userservice-kafka:9092"
 
 # 敏感信息，建议使用 Kubernetes Secrets 或外部密钥管理系统
 secrets:
   MYSQL_PASSWORD: "password"  # 在实际使用时填入
-  REDIS_PASSWORD: "password"  # 在实际使用时填入
 
 # 探针配置
 livenessProbe:
@@ -65,8 +64,6 @@ mysql:
 
 redis:
   enabled: true
-  auth:
-    password: "password"
   master:
     persistence:
       enabled: false
@@ -80,7 +77,7 @@ kafka:
   zookeeper:
     enabled: false
   externalZookeeper:
-    servers: []  # 确保 externalZookeeper 是空的
+    servers: []
 
 #zookeeper:
 #  enabled: true
