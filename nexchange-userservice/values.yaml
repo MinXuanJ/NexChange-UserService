@@ -75,18 +75,21 @@ redis:
 # Kafka configuration with internal Zookeeper
 kafka:
   enabled: true
-  kraftMode: false  # Kraft 模式关闭
+  kraftMode: true
   replicaCount: 2
   zookeeper:
-    enabled: true  # 确保 Zookeeper 被启用
+    enabled: false
   externalZookeeper:
     servers: []  # 确保 externalZookeeper 是空的
 
-zookeeper:
-  enabled: true
-#  replicaCount: 2
-  persistence:
-    enabled: false  # 根据需要设置持久化
+#zookeeper:
+#  enabled: true
+##  replicaCount: 2
+#  persistence:
+#    enabled: false  # 根据需要设置持久化
+
+#kraft:
+#  enabled: false
 
 autoscaling:
   enabled: false  # 如果不需要 HPA，可以设置为 false
