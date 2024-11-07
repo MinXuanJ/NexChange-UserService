@@ -123,6 +123,6 @@ ingress:
 #  enabled: true
 ##  replicaCount: 2
 #  persistence:
-#    enabled: false  # 根据需要设置持久化
+#    enabled: false
 #kraft:
-#  enabled: false帮我修改
+#  enabled: false
