@@ -63,6 +63,7 @@ mysql:
 
 redis:
   enabled: true
+  replicaCount: 2
   master:
     persistence:
       enabled: false

@@ -56,7 +56,7 @@ spec:
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: userservice-mysql
+                  name: {{ .Values.secrets.MYSQL_PASSWORD }}
                   key: mysql-password
           ports:
             - name: http
