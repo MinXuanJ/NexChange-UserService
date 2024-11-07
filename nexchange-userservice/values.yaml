@@ -51,6 +51,7 @@ readinessProbe:
 
 # 依赖服务配置
 mysql:
+  nameOverride: "mysql-user-service"
   enabled: true
   auth:
     database: NexChangeUserDB
@@ -62,6 +63,7 @@ mysql:
 #      size: 8Gi
 
 redis:
+  nameOverride: "redis-service"
   enabled: true
   replicaCount: 2
   master:
