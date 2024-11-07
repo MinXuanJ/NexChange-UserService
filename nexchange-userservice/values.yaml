@@ -1,11 +1,11 @@
 # values.yaml
 # 应用程序环境变量
 configMap:
-  MYSQL_HOST: "mysql-user-service"
+  MYSQL_HOST: "userservice-mysql-user-service"
   MYSQL_PORT: "3306"
-  REDIS_HOST: "redis-service"
+  REDIS_HOST: "userservice-redis-service"
   REDIS_PORT: "6379"
-  KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  KAFKA_BOOTSTRAP_SERVERS: "userservice-kafka-service:9092"
 
 secrets:
   MYSQL_PASSWORD: "password"  # 在实际使用时填入
@@ -65,13 +65,14 @@ mysql:
 redis:
   nameOverride: "redis-service"
   enabled: true
-  replicaCount: 2
+  replicaCount: 1
   auth:
     enabled: false
   master:
     persistence:
       enabled: false
 #      size: 8Gi
+
 
 # Kafka configuration with internal Zookeeper
 kafka:
