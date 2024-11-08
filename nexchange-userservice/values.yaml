@@ -54,7 +54,7 @@ readinessProbe:
 
 # 依赖服务配置
 mysql:
-  nameOverride: "userservice-mysql-user-service"
+  nameOverride: "mysql-user-service"
   enabled: true
   auth:
     database: NexChangeUserDB
