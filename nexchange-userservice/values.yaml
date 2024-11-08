@@ -60,6 +60,7 @@ mysql:
     database: NexChangeUserDB
     username: user
     password: "password"
+    rootPassword: "password"
   primary:
     persistence:
       enabled: false
