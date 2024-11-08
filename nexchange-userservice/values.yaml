@@ -10,7 +10,8 @@ configMap:
   KAFKA_BOOTSTRAP_SERVERS: "userservice-kafka-service:9092"
 
 secrets:
-  MYSQL_PASSWORD: "password"  # 在实际使用时填入
+  MYSQL_PASSWORD: "password"
+  MYSQL_ROOT_PASSWORD: "password"
 
 # service
 replicaCount: 2
