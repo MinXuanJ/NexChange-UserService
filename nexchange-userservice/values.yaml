@@ -63,8 +63,14 @@ mysql:
     rootPassword: "password"
   primary:
     persistence:
-      enabled: false
-#      size: 8Gi
+      enabled: true
+      storageClass: "local-path"
+      size: 8Gi
+    configuration: |-
+      [mysqld]
+      default_authentication_plugin=mysql_native_password
+      skip-name-resolve
+      explicit_defaults_for_timestamp
 
 redis:
   nameOverride: "redis-service"
@@ -102,7 +108,7 @@ autoscaling:
 
 env:
   - name: JWT_SECRET
-    value: "jwt_token"
+    value: "jwt_secret"
 
 # Ingress
 ingress:
