@@ -52,6 +52,7 @@ readinessProbe:
   initialDelaySeconds: 30
   periodSeconds: 10
 
+
 mysql:
   nameOverride: "mysql-user-service"
   enabled: true
@@ -63,23 +64,52 @@ mysql:
   primary:
     persistence:
       enabled: true
-      storageClass: "local-path"
-      size: 8Gi
-    startupProbe:
+      storageClass: "local-path"  # k3s 默认存储类
+      size: 1Gi  # 降低存储大小,适应本地环境
+    resources:  # 添加资源限制
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+    startupProbe:  # 增加启动探针的超时时间
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 30
+    livenessProbe:  # 调整存活探针
+      enabled: true
+      initialDelaySeconds: 120
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+    readinessProbe:  # 调整就绪探针
       enabled: true
       initialDelaySeconds: 30
       periodSeconds: 10
-      timeoutSeconds: 1
-      successThreshold: 1
-      failureThreshold: 15
+      timeoutSeconds: 5
+      failureThreshold: 6
     configuration: |-
       [mysqld]
+      # 降低内存使用
+      performance_schema = off
+      table_definition_cache = 400
+      table_open_cache = 256
+      innodb_buffer_pool_size = 128M
+      innodb_log_buffer_size = 1M
+      max_connections = 50
+      
       default_authentication_plugin=mysql_native_password
       skip-name-resolve
       explicit_defaults_for_timestamp
       bind-address=0.0.0.0
-      socket=/tmp/mysql.sock
-      pid-file=/tmp/mysqld.pid
+      port=3306
+      
+      # 本地调试相关
+      skip-log-bin
+      skip-slave-start
 
 redis:
   nameOverride: "redis-service"
