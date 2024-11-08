@@ -7,7 +7,7 @@ spring:
 #    import: "file:./src/main/resources/secret.properties"
 #  import: "optional:classpath:secret.properties"
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:mysql-user-service}:3306/${DB_NAME:NexChangeUserDB}
+    url: jdbc:mysql://${MYSQL_HOST:userservice-mysql-user-service}:3306/${DB_NAME:NexChangeUserDB}
     username: ${DB_USER:user}
     password: ${MYSQL_PASSWORD:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
