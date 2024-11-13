@@ -37,10 +37,10 @@ server:
 
 logging:
   level:
-    root: WARN
-    org.springframework: WARN
-    com.zaxxer.hikari: WARN
-    org.hibernate: WARN
+    root: INFO
+    com.zaxxer.hikari: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.springframework.jdbc: DEBUG
 
 management:
   endpoints:
