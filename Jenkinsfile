@@ -176,13 +176,13 @@ pipeline {
                             returnStdout: true
                     ).trim()
 
-//                    // 验证 Zookeeper 状态
-//                    def zkHealth = sh(
-//                            script: "kubectl exec ${zookeeperPod} -- bash -c 'echo ruok | nc localhost 2181'",
-//                            returnStdout: true
-//                    ).trim()
-//
-//                    echo "Zookeeper health check response: ${zkHealth}"
+                    // 验证 Zookeeper 状态
+                    def zkHealth = sh(
+                            script: "kubectl exec ${zookeeperPod} -- bash -c 'echo ruok | nc localhost 2181'",
+                            returnStdout: true
+                    ).trim()
+
+                    echo "Zookeeper health check response: ${zkHealth}"
                     echo "Zookeeper logs:"
                     sh "kubectl logs ${zookeeperPod} --tail=20"
                 }
