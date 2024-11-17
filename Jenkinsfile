@@ -9,7 +9,6 @@ pipeline {
         SONAR_ORGANIZATION_KEY = 'nexchange' // Sonar Cloud Organization Key
         SONAR_PROJECT_KEY = 'MinXuanJ_NexChange-UserService' // Sonar Cloud Project Key
         SONAR_HOST_URL = 'https://sonarcloud.io' // Sonar Cloud URL
-//        SONAR_LOGIN = '6850d62da33742ee455c430f10fabdda0f4803c2'
 //      KUBECONFIG = '/var/lib/jenkins/.kube/config' // Jenkins Server KubeConfig
     }
 
@@ -24,18 +23,10 @@ pipeline {
 //            }
 //        }
 
-//        stage('Start Docker Services') {
-//            steps {
-//                script {
-//                    sh 'docker-compose up -d'
-//                    sh 'docker-compose ps'
-//                }
-//            }
-//        }
         stage('Build and Package') {
             steps {
                 script {
-                    sh "mvn clean package -DskipTests"
+                    sh "mvn clean package"
                 }
             }
         }
@@ -44,11 +35,9 @@ pipeline {
        stage('Unit Test') {
            steps {
                script {
-//                   sh "docker-compose ps"
-//                   sh "mvn test"
-                   sh "mvn clean package -DskipTests"
+                   sh "mvn test"
                }
-//               junit '**/target/surefire-reports/*.xml'
+               junit '**/target/surefire-reports/*.xml'
             }
        }
 
@@ -112,15 +101,6 @@ pipeline {
                 }
             }
         }
-
-
-//        stage('Stop Docker Services') {
-//            steps {
-//                script {
-//                    sh 'docker-compose down'
-//                }
-//            }
-//        }
 
         stage('Verify Kubernetes Access') {
             steps {
@@ -261,11 +241,11 @@ pipeline {
                             returnStdout: true
                     ).trim()
 
-                    // 验证 Kafka 状态
+                    // Verify Kafka
                     echo "Kafka logs:"
                     sh "kubectl logs ${kafkaPod} --tail=20"
 
-                    // 测试 Kafka 功能
+                    // Test Kafka
                     def kafkaTopics = sh(
                             script: """
                     kubectl exec ${kafkaPod} -- bash -c \
@@ -304,7 +284,7 @@ pipeline {
         stage('Create PV and PVC for MySQL') {
             steps {
                 script {
-                    // 检查PVC是否存在
+                    // Check exsistance of PVC
                     def pvcStatus = sh(
                             script: "kubectl get pvc mysql-pvc-user --ignore-not-found -o jsonpath='{.status.phase}'",
                             returnStdout: true
@@ -313,13 +293,11 @@ pipeline {
                     if (pvcStatus == "Bound") {
                         echo "PVC 'mysql-pvc-user' already exists, skipping creation."
                     } else {
-                        // 如果 PVC 不存在，执行创建
                         echo "PVC 'mysql-pvc-user' not found, creating..."
                         sh "kubectl apply -f mysql-user-service-pv.yaml"
                         sh "kubectl apply -f mysql-user-service-pvc.yaml"
 
-                        // 等待 PVC 准备就绪
-//                        sh "kubectl wait --for=condition=bound pvc/mysql-pvc-user --timeout=300s"
+                        sh "kubectl wait --for=condition=bound pvc/mysql-pvc-user --timeout=300s"
 
                         echo "PV and PVC for MySQL created successfully."
                     }
@@ -401,23 +379,21 @@ pipeline {
                             returnStdout: true
                     ).trim()
 
-//                    // 5. Check services connection
-//                    echo "Checking service connectivity..."
-//                    sh """
-//                echo "Database Connection Info:"
-//                kubectl logs ${podName} | grep -i "database"
-//
-//                echo "\nKafka Connection Info:"
-//                kubectl logs ${podName} | grep -i "kafka"
-//
-//                echo "\nRedis Connection Info:"
-//                kubectl logs ${podName} | grep -i "redis"
-//
-//                echo "\nApplication Health:"
-//                kubectl logs ${podName} | grep -i "started"
-//            """
+                    // 5. Check services connection
+                    echo "Checking service connectivity..."
+                    sh """
+                echo "Database Connection Info:"
+                kubectl logs ${podName} | grep -i "database"
 
+                echo "\nKafka Connection Info:"
+                kubectl logs ${podName} | grep -i "kafka"
 
+                echo "\nRedis Connection Info:"
+                kubectl logs ${podName} | grep -i "redis"
+
+                echo "\nApplication Health:"
+                kubectl logs ${podName} | grep -i "started"
+                """
                     echo "Application Logs:"
                     sh """
                 echo "Recent Logs:"
@@ -425,7 +401,7 @@ pipeline {
                 
                 echo "\nApplication Status:"
                 kubectl exec ${podName} -- curl -s http://localhost:8081/actuator/health || true
-            """
+                """
                 }
             }
         }
@@ -433,7 +409,6 @@ pipeline {
         stage('Test Service Connections') {
             steps {
                 script {
-                    // 获取用户服务的 Pod 名称
                     def userServicePod = sh(
                             script: "kubectl get pod -l app=nexchange-userservice -o jsonpath='{.items[0].metadata.name}'",
                             returnStdout: true
@@ -446,21 +421,21 @@ pipeline {
                 echo "Testing MySQL Connection:"
                 kubectl run mysql-test --rm -i --restart=Never --image=mysql:8.0 -- \
                 mysql -h mysql-user-service -uroot -padmin -e 'SELECT 1' || true
-            """
+                """
 
                     // 测试 Redis 连接
                     sh """
                 echo "Testing Redis Connection:"
                 kubectl run redis-test --rm -i --restart=Never --image=redis -- \
                 redis-cli -h redis-service ping || true
-            """
+                """
 
                     // 测试 Kafka 连接
                     sh """
                 echo "Testing Kafka Connection:"
                 kubectl run kafka-test --rm -i --restart=Never --image=confluentinc/cp-kafka:latest -- \
                 kafka-topics --bootstrap-server kafka-service:9092 --list || true
-            """
+                """
                 }
             }
         }
@@ -471,7 +446,7 @@ pipeline {
                     // 等待 Pod 就绪
                     sh """
                 kubectl wait --for=condition=ready pod -l app=nexchange-userservice --timeout=300s || true
-            """
+                    """
 
                     // 获取详细状态
                     def podStatus = sh(
@@ -484,7 +459,7 @@ pipeline {
                     
                     echo "\nPod Description:"
                     kubectl describe pods -l app=nexchange-userservice
-                ''',
+                    ''',
                             returnStdout: true
                     ).trim()
 
@@ -500,13 +475,14 @@ pipeline {
                 }
             }
         }
-//        stage('Analysis Pods and Logs') {
-//            steps {
-//                script {
-//                    sh "./check-all-services.sh"
-//                }
-//            }
-//        }
+
+        stage('Analysis Pods and Logs') {
+            steps {
+                script {
+                    sh "./check-all-services.sh"
+                }
+            }
+        }
 
         stage('Get Cluster Ip') {
             steps {
